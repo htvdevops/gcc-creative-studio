@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Use a Python image with uv pre-installed
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+FROM ghcr.io/astral-sh/uv:python3.12-alpine
 
 # Install the project into `/app`
 WORKDIR /app
@@ -40,7 +40,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Update package lists and install ffmpeg
-RUN apt-get update && apt-get install -y ffmpeg
+RUN apk add --no-cache ffmpeg
 
 # Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
