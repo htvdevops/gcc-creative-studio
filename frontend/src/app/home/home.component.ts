@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // This object holds the current state of all user selections.
   searchRequest: ImagenRequest = {
     prompt: '',
-    generationModel: 'imagen-3.0-fast-generate-001',
+    generationModel: 'gemini-3.1-flash-image-preview', // Set your desired default image model here
     aspectRatio: '1:1',
     numberOfMedia: 1,
     style: null,
@@ -130,8 +130,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     m => m.type === 'IMAGE',
   );
   selectedGenerationModelObject =
-    this.generationModels.find(m => m.value === 'imagen-3.0-fast-generate-001') ||
-    this.generationModels[0];
+    this.generationModels.find(m => m.value === this.searchRequest.generationModel) || this.generationModels[0];
   selectedGenerationModel = this.selectedGenerationModelObject.viewValue;
   aspectRatioOptions: {
     value: string;
@@ -872,7 +871,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generationModel: 'imagen-3.0-fast-generate-001',
+      generationModel: 'gemini-3.1-flash-image-preview', // Ensure this matches the initial default
       aspectRatio: '1:1',
       numberOfMedia: 1,
       style: null,
@@ -889,8 +888,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.referenceImages = [];
     this.sourceMediaItems = [];
     this.selectedGenerationModelObject =
-      this.generationModels.find(m => m.value === 'imagen-3.0-fast-generate-001') ||
-      this.generationModels[0];
+      this.generationModels.find(m => m.value === this.searchRequest.generationModel) || this.generationModels[0];
     this.selectedGenerationModel = this.selectedGenerationModelObject.viewValue;
     this.selectedAspectRatio = this.aspectRatioOptions[0].viewValue;
     this.imageStateService.resetState();

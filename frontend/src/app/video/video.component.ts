@@ -150,7 +150,8 @@ export class VideoComponent implements OnInit, AfterViewInit {
   generationModels: GenerationModelConfig[] = MODEL_CONFIGS.filter(
     m => m.type === 'VIDEO',
   );
-  selectedGenerationModel = this.generationModels[0].viewValue;
+  selectedGenerationModel = this.generationModels.find(m => m.value === this.searchRequest.generationModel)?.viewValue
+    || this.generationModels[0].viewValue;
   aspectRatioOptions: {value: string; viewValue: string; disabled: boolean}[] =
     [
       {value: '16:9', viewValue: '16:9 \n Horizontal', disabled: false},
@@ -761,7 +762,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generationModel: 'veo-3.1-fast-generate-001',
+      generationModel: 'veo-3.1-fast-generate-001', // Set your desired default video model here
       aspectRatio: '16:9', // Default aspect ratio
       numberOfMedia: 1, // Default to 1 media item
       style: null,
@@ -774,6 +775,9 @@ export class VideoComponent implements OnInit, AfterViewInit {
       useBrandGuidelines: false,
       enhancePrompt: false,
     };
+    this.selectedGenerationModel = this.generationModels.find(m => m.value === this.searchRequest.generationModel)?.viewValue
+      || this.generationModels[0].viewValue;
+      
     this.videoStateService.resetState();
   }
 
