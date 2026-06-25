@@ -128,9 +128,9 @@ export class VideoComponent implements OnInit, AfterViewInit {
   // This object holds the current state of all user selections.
   searchRequest: VeoRequest = {
     prompt: '',
-    generationModel: 'veo-3.1-generate-001',
-    aspectRatio: '16:9',
-    numberOfMedia: 4,
+    generationModel: 'veo-3.1-fast-generate-001',
+    aspectRatio: '16:9', // Default aspect ratio
+    numberOfMedia: 1, // Default to 1 media item
     style: null,
     lighting: null,
     colorAndTone: null,
@@ -761,9 +761,9 @@ export class VideoComponent implements OnInit, AfterViewInit {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generationModel: 'veo-3.0-generate-001',
-      aspectRatio: '16:9',
-      numberOfMedia: 4,
+      generationModel: 'veo-3.1-fast-generate-001',
+      aspectRatio: '16:9', // Default aspect ratio
+      numberOfMedia: 1, // Default to 1 media item
       style: null,
       lighting: null,
       colorAndTone: null,
@@ -1521,8 +1521,8 @@ export class VideoComponent implements OnInit, AfterViewInit {
   // Selected values
   selectedMode = signal<string>('Text to Video');
   selectedNewAspectRatio = signal<string>('Landscape (16:9)');
-  selectedOutputs = signal<number>(2);
-  selectedModel = signal<string>('Veo 3.1 - Fast');
+  selectedOutputs = signal<number>(1); // Default to 1 output
+  selectedModel = signal<string>('Veo 3.1 - Fast'); // Assuming 'Veo 3.1 - Fast' is the viewValue for 'veo-3.1-fast-generate-001'
   selectedPreset = signal<string>('');
 
   // --- Event Handlers ---

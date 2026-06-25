@@ -97,9 +97,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // This object holds the current state of all user selections.
   searchRequest: ImagenRequest = {
     prompt: '',
-    generationModel: 'gemini-3.1-flash-image-preview',
+    generationModel: 'imagen-3.0-fast-generate-001',
     aspectRatio: '1:1',
-    numberOfMedia: 4,
+    numberOfMedia: 1,
     style: null,
     lighting: null,
     colorAndTone: null,
@@ -129,8 +129,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   generationModels: GenerationModelConfig[] = MODEL_CONFIGS.filter(
     m => m.type === 'IMAGE',
   );
-  selectedGenerationModelObject = this.generationModels[0];
-  selectedGenerationModel = this.generationModels[0].viewValue;
+  selectedGenerationModelObject =
+    this.generationModels.find(m => m.value === 'imagen-3.0-fast-generate-001') ||
+    this.generationModels[0];
+  selectedGenerationModel = this.selectedGenerationModelObject.viewValue;
   aspectRatioOptions: {
     value: string;
     viewValue: string;
@@ -870,9 +872,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generationModel: 'gemini-3.1-flash-image-preview',
+      generationModel: 'imagen-3.0-fast-generate-001',
       aspectRatio: '1:1',
-      numberOfMedia: 4,
+      numberOfMedia: 1,
       style: null,
       lighting: null,
       colorAndTone: null,
@@ -886,8 +888,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.negativePhrases = [];
     this.referenceImages = [];
     this.sourceMediaItems = [];
-    this.selectedGenerationModel = this.generationModels[0].viewValue;
-    this.selectedGenerationModelObject = this.generationModels[0];
+    this.selectedGenerationModelObject =
+      this.generationModels.find(m => m.value === 'imagen-3.0-fast-generate-001') ||
+      this.generationModels[0];
+    this.selectedGenerationModel = this.selectedGenerationModelObject.viewValue;
     this.selectedAspectRatio = this.aspectRatioOptions[0].viewValue;
     this.imageStateService.resetState();
   }
