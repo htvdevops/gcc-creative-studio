@@ -41,11 +41,11 @@ export class VideoStateService {
   private initialState: VideoState = {
     prompt: '',
     aspectRatio: '16:9',
-    model: 'veo-3.1-generate-001',
+    model: 'veo-3.1-fast-generate-001',
     style: null,
     colorAndTone: null,
     lighting: null,
-    numberOfMedia: 4,
+    numberOfMedia: 1,
     durationSeconds: 8,
     composition: null,
     generateAudio: true,

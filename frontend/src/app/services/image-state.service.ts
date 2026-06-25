@@ -50,7 +50,7 @@ export class ImageStateService {
     resolution: '4K',
     style: null,
     colorAndTone: null,
-    numberOfMedia: 4,
+    numberOfMedia: 1,
     composition: null,
     useBrandGuidelines: false,
     enhancePrompt: false,
