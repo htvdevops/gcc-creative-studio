@@ -763,7 +763,6 @@ export class VideoComponent implements OnInit, AfterViewInit {
     this.searchRequest = {
       prompt: '',
       generationModel: 'veo-3.1-fast-generate-001', // Set your desired default video model here
-      numberOfMedia: 1,
       aspectRatio: '16:9', // Default aspect ratio
       numberOfMedia: 1, // Default to 1 media item
       style: null,
