@@ -190,7 +190,7 @@ export class SearchService {
   private startVeoPolling(mediaId: number): void {
     this.stopVeoPolling(); // Ensure no other polls are running
 
-    this.videoPollingSubscription = timer(5000, 15000) // Start after 5s, then every 15s
+    this.videoPollingSubscription = timer(2000, 5000) // Start after 2s, then every 5s
       .pipe(
         switchMap(() => this.getVeoMediaItem(mediaId)),
         tap(latestItem => {
@@ -280,7 +280,7 @@ export class SearchService {
   private startVtoPolling(mediaId: number): void {
     this.stopVtoPolling();
 
-    this.vtoPollingSubscription = timer(5000, 15000) // Start after 5s, then every 15s
+    this.vtoPollingSubscription = timer(2000, 5000) // Start after 2s, then every 5s
       .pipe(
         switchMap(() => this.getVtoMediaItem(mediaId)),
         tap(latestItem => {
@@ -360,7 +360,7 @@ export class SearchService {
   private startAudioPolling(mediaId: number): void {
     this.stopAudioPolling();
 
-    this.audioPollingSubscription = timer(5000, 15000)
+    this.audioPollingSubscription = timer(2000, 5000)
       .pipe(
         switchMap(() => this.getAudioMediaItem(mediaId)),
         tap(latestItem => {

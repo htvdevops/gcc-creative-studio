@@ -491,6 +491,16 @@ handle_manual_steps() {
 setup_firebase_app() {
     step 7 "Automating Firebase Web App Configuration"; cd "$REPO_ROOT"
 
+    info "Verifying Firebase CLI access to project '$GCP_PROJECT_ID'..."
+    if ! firebase projects:list --json | jq -e ".result[] | select(.projectId == \"$GCP_PROJECT_ID\")" > /dev/null 2>&1; then
+        warn "Firebase CLI cannot access project '$GCP_PROJECT_ID'."
+        info "If you are in Cloud Shell or a remote terminal, you MUST run this command in a separate tab or before continuing:"
+        echo -e "   ${C_YELLOW}firebase login --no-localhost${C_RESET}"
+        info "If you have already logged in, ensure you completed Step 6 (linking the project) here:"
+        echo -e "   ${C_YELLOW}https://console.firebase.google.com/?project=${GCP_PROJECT_ID}${C_RESET}"
+        prompt "Press [Enter] to retry after logging in/linking, or Ctrl+C to abort."; read -r < /dev/tty
+    fi
+
     info "Checking for existing Firebase web app named '$FE_SERVICE_NAME'...";
     if ! firebase apps:list --project="$GCP_PROJECT_ID" | grep -q "$FE_SERVICE_NAME"; then
         info "No existing app found. Creating a new Firebase web app...";
@@ -732,6 +742,10 @@ seed_data() {
     # Create venv if it doesn't exist
     uv venv "$VENV_DIR" --python python3
 
+    # Ensure the lockfile is up to date with pyproject.toml
+    info "Updating uv.lock in the backend directory..."
+    (cd backend && uv lock)
+
     # Install dependencies from pyproject.toml into the virtual environment
     info "Installing Python project and its dependencies from 'backend/pyproject.toml'..."
     # Use an editable install (-e) to ensure all project dependencies are installed.
@@ -760,8 +774,26 @@ trigger_builds() {
     step 14 "Triggering Initial Builds"; cd "$REPO_ROOT"
     prompt "Would you like to trigger the initial builds for the frontend and backend now? (y/n)"; read -r REPLY < /dev/tty
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then info "You can trigger the builds manually later by pushing a commit or via the Cloud Build UI."; return; fi
-    info "Triggering backend build..."; gcloud builds triggers run "${BE_SERVICE_NAME}-trigger" --branch="$GITHUB_BRANCH" --project="$GCP_PROJECT_ID" --region="us-central1"
-    info "Triggering frontend build..."; gcloud builds triggers run "$GCP_PROJECT_ID-trigger" --branch="$GITHUB_BRANCH" --project $GCP_PROJECT_ID --region="us-central1"
+
+    # Ensure the region is retrieved from state or tfvars, default to us-central1
+    if [ -z "$GCP_REGION" ]; then
+        GCP_REGION=$(grep 'gcp_region' "infra/environments/$ENV_NAME/$ENV_NAME.tfvars" | awk -F'"' '{print $2}')
+        GCP_REGION=${GCP_REGION:-us-central1}
+    fi
+
+    # Fallback if variable is lost during resumption
+    if [ -z "$GITHUB_BRANCH" ]; then
+      warn "GITHUB_BRANCH variable is missing. Attempting to recover from .tfvars..."
+      GITHUB_BRANCH=$(grep 'github_branch_name' "infra/environments/$ENV_NAME/$ENV_NAME.tfvars" | awk -F'"' '{print $2}')
+      GITHUB_BRANCH=${GITHUB_BRANCH:-main}
+      info "Recovered branch: $GITHUB_BRANCH"
+    fi
+
+    info "Triggering backend build in $GCP_REGION..."; 
+    gcloud builds triggers run "${BE_SERVICE_NAME}-trigger" --branch="$GITHUB_BRANCH" --project="$GCP_PROJECT_ID" --region="$GCP_REGION"
+    
+    info "Triggering frontend build in $GCP_REGION..."; 
+    gcloud builds triggers run "${GCP_PROJECT_ID}-trigger" --branch="$GITHUB_BRANCH" --project "$GCP_PROJECT_ID" --region="$GCP_REGION"
 
     success "Builds have been triggered."; info "You can monitor their progress in the Cloud Build console:"; echo -e "   ${C_YELLOW}https://console.cloud.google.com/cloud-build/builds?project=${GCP_PROJECT_ID}${C_RESET}"
 }
@@ -801,6 +833,14 @@ main() {
         if (( LAST_COMPLETED_STEP < step_num )); then
             if [ -z "$STATE_FILE" ] && [ "$step_num" -gt 4 ]; then
                 STATE_FILE="$REPO_ROOT/infra/environments/$ENV_NAME/.bootstrap_state"
+                
+                # If ENV_NAME is empty (resuming after Step 5), we must recover it to find the state file
+                if [ -z "$ENV_NAME" ]; then
+                  warn "Environment name unknown. Please re-enter the name used previously (e.g., dev-infra):"
+                  read -p "   Environment Name: " ENV_NAME < /dev/tty
+                  STATE_FILE="$REPO_ROOT/infra/environments/$ENV_NAME/.bootstrap_state"
+                fi
+                read_state # Crucial: Load the stored GITHUB_BRANCH and other vars
                 write_state "REPO_ROOT" "$REPO_ROOT"
             fi
             ${steps_to_run[$i]}; write_state "LAST_COMPLETED_STEP" "$step_num"
@@ -826,7 +866,17 @@ main() {
     # Get the backend URL
     BACKEND_URL=$(terraform output -raw backend_service_url 2>/dev/null || echo "")
     if [ -z "$BACKEND_URL" ]; then
-        warn "Could not find 'backend_service_url' in Terraform outputs."
+        info "Deducing Backend URL via gcloud..."
+        BACKEND_URL=$(gcloud run services list --filter="SERVICE:${BE_SERVICE_NAME}" --project="$GCP_PROJECT_ID" --format='value(URL)' --limit=1 2>/dev/null || echo "")
+    fi
+
+    # Better Frontend discovery
+    if [ -z "$FRONTEND_URL" ] || [[ "$FRONTEND_URL" == *"YOUR_FIREBASE_SITE_ID"* ]]; then
+        info "Deducing Frontend URL via firebase..."
+        FRONTEND_URL=$(firebase hosting:sites:list --project="$GCP_PROJECT_ID" --json 2>/dev/null | jq -r '.result.sites[0].defaultUrl' 2>/dev/null || echo "")
+        if [ -z "$FRONTEND_URL" ] || [ "$FRONTEND_URL" == "null" ]; then
+             FRONTEND_URL="https://${GCP_PROJECT_ID}.web.app"
+        fi
     fi
 
     success "Your infrastructure is ready."

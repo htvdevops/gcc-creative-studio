@@ -42,7 +42,7 @@ class CreateImagenDto(BaseDto):
         description="The ID of the workspace for this generation.",
     )
     generation_model: GenerationModelEnum = Field(
-        default=GenerationModelEnum.IMAGEN_4_ULTRA,
+        default=GenerationModelEnum.IMAGEN_4_FAST,
         description="Model used for image generation.",
     )
     aspect_ratio: AspectRatioEnum = Field(

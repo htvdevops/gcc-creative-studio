@@ -56,7 +56,7 @@ class CreateVeoDto(BaseDto):
         description="The ID of the workspace for this generation.",
     )
     generation_model: GenerationModelEnum = Field(
-        default=GenerationModelEnum.VEO_3_1_GENERATE_001,
+        default=GenerationModelEnum.VEO_3_1_FAST_GENERATE_001,
         description="Model used for image generation.",
     )
     aspect_ratio: AspectRatioEnum = Field(

@@ -116,7 +116,7 @@ async def lifespan(app: FastAPI):
 
     logger.info("Creating ThreadPoolExecutor...")
     # Create the pool and attach it to the app's state
-    app.state.executor = ThreadPoolExecutor(max_workers=4)
+    app.state.executor = ThreadPoolExecutor(max_workers=16)
 
     yield
 

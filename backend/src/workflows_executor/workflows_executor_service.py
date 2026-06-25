@@ -99,7 +99,7 @@ class WorkflowsExecutorService:
         headers = {"Authorization": authorization} if authorization else {}
 
         # Poll configuration
-        initial_delay = 2
+        initial_delay = 1
         poll_interval = 5
         timeout = 600  # 10 minutes timeout
 
