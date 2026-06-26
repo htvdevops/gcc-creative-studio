@@ -109,11 +109,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     useBrandGuidelines: false,
     enhancePrompt: false,
     googleSearch: false,
-    resolution: '1K',
-    outputMimeType: 'image/png',
-    temperature: 1,
-    maxOutputTokens: 32768,
-    topP: 0.95,
+    resolution: '1K'
   };
 
   modes = [
@@ -887,7 +883,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       useBrandGuidelines: false,
       googleSearch: false,
       resolution: '1K',
-      outputMimeType: 'image/png',
       temperature: 1,
       maxOutputTokens: 32768,
       topP: 0.95,
