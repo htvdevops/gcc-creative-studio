@@ -25,7 +25,7 @@ export type ImagenRequest = {
   lighting?: string | null;
   composition?: string | null;
   addWatermark: boolean;
-  upscaleFactor?: '' | 'x2' | 'x4';
+  upscaleFactor?: '' | 'x2' | 'x3' | 'x4';
   sourceAssetIds?: number[];
   sourceMediaItems?: SourceMediaItemLink[];
   workspaceId?: number;
