@@ -62,6 +62,7 @@ class GenerationModelEnum(str, Enum):
     GEMINI_2_5_FLASH_IMAGE_PREVIEW = "gemini-2.5-flash-image-preview"
     GEMINI_2_5_FLASH_IMAGE = "gemini-2.5-flash-image"
     GEMINI_3_PRO = "gemini-3-pro"
+    GEMINI_3_PRO_IMAGE_PREVIEW = "gemini-3-pro-image-preview"
     GEMINI_3_PRO_IMAGE = "gemini-3-pro-image"
     GEMINI_3_1_FLASH_IMAGE = "gemini-3.1-flash-image"
     GEMINI_3_FLASH = "gemini-3-flash"
@@ -96,6 +97,7 @@ class GenerationModelEnum(str, Enum):
         return self in [
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE_PREVIEW,
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE,
+            GenerationModelEnum.GEMINI_3_PRO_IMAGE_PREVIEW,
             GenerationModelEnum.GEMINI_3_PRO_IMAGE,
             GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE,
         ]

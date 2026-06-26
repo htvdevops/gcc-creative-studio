@@ -51,7 +51,7 @@ export class TagsService {
   ): Observable<PaginationResponseDto<TagModel>> {
     const url = `${this.apiUrl}/search`;
     const body: any = {
-      workspace_id: workspaceId,
+      workspaceId: workspaceId,
       search: search,
       limit: pageSize,
       offset: (page - 1) * pageSize,
@@ -69,14 +69,14 @@ export class TagsService {
   ): Observable<TagModel> {
     return this.http.post<TagModel>(`${this.apiUrl}`, {
       name,
-      workspace_id: workspaceId,
+      workspaceId: workspaceId,
       color,
     });
   }
 
   deleteTag(workspaceId: number, tagId: number): Observable<any> {
     return this.http.delete<any>(
-      `${this.apiUrl}/${tagId}?workspace_id=${workspaceId}`,
+      `${this.apiUrl}/${tagId}?workspaceId=${workspaceId}`,
     );
   }
 
@@ -90,7 +90,7 @@ export class TagsService {
     if (name) body.name = name;
     if (color) body.color = color;
     return this.http.put<TagModel>(
-      `${this.apiUrl}/${tagId}?workspace_id=${workspaceId}`,
+      `${this.apiUrl}/${tagId}?workspaceId=${workspaceId}`,
       body,
     );
   }
@@ -102,7 +102,7 @@ export class TagsService {
     tagNames: string[],
   ): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/bulk-assign`, {
-      workspace_id: workspaceId,
+      workspaceId: workspaceId,
       item_ids: itemIds,
       item_type: itemType,
       tag_names: tagNames,

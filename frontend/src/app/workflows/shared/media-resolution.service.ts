@@ -158,7 +158,7 @@ export class MediaResolutionService {
           );
         }
       } else {
-        const assetId = val.sourceAssetId ?? val.source_asset_id;
+        const assetId = val.sourceAssetId ?? val.sourceAssetId;
         if (assetId) {
           sourceAssetIds.add(assetId);
         } else if (val.sourceMediaItem?.mediaItemId) {

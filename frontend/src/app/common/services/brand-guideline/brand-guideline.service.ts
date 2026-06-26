@@ -78,7 +78,7 @@ export class BrandGuidelineService {
     return this.http.post<BrandGuidelineModel>(
       `${this.apiUrl}/finalize-upload`,
       {
-        workspace_id: workspaceId,
+        workspaceId: workspaceId,
         gcs_uri: gcsUri,
         name,
         original_filename,

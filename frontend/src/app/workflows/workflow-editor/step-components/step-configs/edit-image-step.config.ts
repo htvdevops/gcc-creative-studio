@@ -54,7 +54,7 @@ export const EDIT_IMAGE_STEP_CONFIG: StepConfig = {
       defaultValue: 'gemini-2.5-flash-image',
     },
     {
-      name: 'aspect_ratio',
+      name: 'aspectRatio',
       label: 'Aspect Ratio',
       type: 'select',
       options: [],

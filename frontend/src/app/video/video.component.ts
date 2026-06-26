@@ -128,19 +128,19 @@ export class VideoComponent implements OnInit, AfterViewInit {
   // This object holds the current state of all user selections.
   searchRequest: VeoRequest = {
     prompt: '',
-    generation_model: 'veo-3.1-fast-generate-001',
-    aspect_ratio: '16:9', // Default aspect ratio
-    number_of_media: 1, // Default to 1 media item
+    generationModel: 'veo-3.1-fast-generate-001',
+    aspectRatio: '16:9', // Default aspect ratio
+    numberOfMedia: 1, // Default to 1 media item
     style: null,
     lighting: null,
-    color_and_tone: null,
+    colorAndTone: null,
     composition: null,
-    negative_prompt: '',
-    generate_audio: true,
-    duration_seconds: 8,
-    use_brand_guidelines: false,
-    enhance_prompt: false,
-    reference_images: [],
+    negativePrompt: '',
+    generateAudio: true,
+    durationSeconds: 8,
+    useBrandGuidelines: false,
+    enhancePrompt: false,
+    referenceImages: [],
   };
 
   // --- Negative Prompt Chips ---
@@ -150,7 +150,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
   generationModels: GenerationModelConfig[] = MODEL_CONFIGS.filter(
     m => m.type === 'VIDEO',
   );
-  selectedGenerationModel = this.generationModels.find(m => m.value === this.searchRequest.generation_model)?.viewValue 
+  selectedGenerationModel = this.generationModels.find(m => m.value === this.searchRequest.generationModel)?.viewValue 
     ?? this.generationModels[0].viewValue;
   aspectRatioOptions: {value: string; viewValue: string; disabled: boolean}[] =
     [
@@ -278,18 +278,18 @@ export class VideoComponent implements OnInit, AfterViewInit {
   public saveState() {
     this.videoStateService.updateState({
       prompt: this.searchRequest.prompt,
-      aspectRatio: this.searchRequest.aspect_ratio,
-      model: this.searchRequest.generation_model,
+      aspectRatio: this.searchRequest.aspectRatio,
+      model: this.searchRequest.generationModel,
       style: this.searchRequest.style,
-      colorAndTone: this.searchRequest.color_and_tone,
+      colorAndTone: this.searchRequest.colorAndTone,
       lighting: this.searchRequest.lighting,
-      numberOfMedia: this.searchRequest.number_of_media,
-      durationSeconds: this.searchRequest.duration_seconds,
+      numberOfMedia: this.searchRequest.numberOfMedia,
+      durationSeconds: this.searchRequest.durationSeconds,
       composition: this.searchRequest.composition,
-      generateAudio: this.searchRequest.generate_audio,
-      negativePrompt: this.searchRequest.negative_prompt || '',
-      useBrandGuidelines: this.searchRequest.use_brand_guidelines,
-      enhancePrompt: this.searchRequest.enhance_prompt || false,
+      generateAudio: this.searchRequest.generateAudio,
+      negativePrompt: this.searchRequest.negativePrompt || '',
+      useBrandGuidelines: this.searchRequest.useBrandGuidelines,
+      enhancePrompt: this.searchRequest.enhancePrompt || false,
       mode: this.currentMode,
     });
   }
@@ -297,18 +297,18 @@ export class VideoComponent implements OnInit, AfterViewInit {
   private restoreState() {
     const state = this.videoStateService.getState();
     this.searchRequest.prompt = state.prompt;
-    this.searchRequest.aspect_ratio = state.aspectRatio;
-    this.searchRequest.generation_model = state.model;
+    this.searchRequest.aspectRatio = state.aspectRatio;
+    this.searchRequest.generationModel = state.model;
     this.searchRequest.style = state.style;
-    this.searchRequest.color_and_tone = state.colorAndTone;
+    this.searchRequest.colorAndTone = state.colorAndTone;
     this.searchRequest.lighting = state.lighting;
-    this.searchRequest.number_of_media = state.numberOfMedia;
-    this.searchRequest.duration_seconds = state.durationSeconds;
+    this.searchRequest.numberOfMedia = state.numberOfMedia;
+    this.searchRequest.durationSeconds = state.durationSeconds;
     this.searchRequest.composition = state.composition;
-    this.searchRequest.generate_audio = state.generateAudio;
-    this.searchRequest.negative_prompt = state.negativePrompt;
-    this.searchRequest.use_brand_guidelines = state.useBrandGuidelines;
-    this.searchRequest.enhance_prompt = state.enhancePrompt;
+    this.searchRequest.generateAudio = state.generateAudio;
+    this.searchRequest.negativePrompt = state.negativePrompt;
+    this.searchRequest.useBrandGuidelines = state.useBrandGuidelines;
+    this.searchRequest.enhancePrompt = state.enhancePrompt;
     this.currentMode = state.mode || 'Text to Video';
 
     this.negativePhrases = state.negativePrompt
@@ -349,7 +349,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
   }
 
   selectModel(model: {value: string; viewValue: string}): void {
-    this.searchRequest.generation_model = model.value;
+    this.searchRequest.generationModel = model.value;
     this.selectedGenerationModel = model.viewValue;
 
     const isVeo2 =
@@ -359,26 +359,26 @@ export class VideoComponent implements OnInit, AfterViewInit {
     if (isVeo2) {
       // Veo 2 models do not support audio.
       this.isAudioGenerationDisabled = true;
-      this.searchRequest.generate_audio = false;
+      this.searchRequest.generateAudio = false;
 
       // Re-enable all aspect ratios for Veo 2.
       this.aspectRatioOptions.forEach(opt => (opt.disabled = false));
     } else if (isVeo2Exp) {
       // Veo 2 Exp model does not support audio.
       this.isAudioGenerationDisabled = true;
-      this.searchRequest.generate_audio = false;
+      this.searchRequest.generateAudio = false;
       this.aspectRatioOptions.forEach(opt => (opt.disabled = false));
     } else {
       this.clearOtherImage(1);
 
       // Veo 3 models support audio.
       this.isAudioGenerationDisabled = false;
-      this.searchRequest.generate_audio = true;
+      this.searchRequest.generateAudio = true;
 
       // Veo 3 only supports 16:9 and 9:16 aspect ratios.
       const supportedRatios = ['16:9', '9:16'];
-      if (!supportedRatios.includes(this.searchRequest.aspect_ratio)) {
-        this.searchRequest.aspect_ratio = '16:9';
+      if (!supportedRatios.includes(this.searchRequest.aspectRatio)) {
+        this.searchRequest.aspectRatio = '16:9';
         const landscapeOption = this.aspectRatioOptions.find(
           opt => opt.value === '16:9',
         )!;
@@ -393,7 +393,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
   selectAspectRatio(ratio: string | {value: string; viewValue: string}): void {
     if (typeof ratio === 'string') {
-      this.searchRequest.aspect_ratio = ratio;
+      this.searchRequest.aspectRatio = ratio;
       const option = this.aspectRatioOptions.find(
         opt => opt.value === ratio || opt.viewValue.includes(ratio),
       );
@@ -401,7 +401,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
         this.selectedAspectRatio = option.viewValue;
       }
     } else {
-      this.searchRequest.aspect_ratio = ratio.value;
+      this.searchRequest.aspectRatio = ratio.value;
       this.selectedAspectRatio = ratio.viewValue;
     }
     this.saveState();
@@ -422,19 +422,19 @@ export class VideoComponent implements OnInit, AfterViewInit {
   }
 
   selectColor(color: string): void {
-    this.searchRequest.color_and_tone === color
-      ? (this.searchRequest.color_and_tone = null)
-      : (this.searchRequest.color_and_tone = color);
+    this.searchRequest.colorAndTone === color
+      ? (this.searchRequest.colorAndTone = null)
+      : (this.searchRequest.colorAndTone = color);
     this.saveState();
   }
 
   selectNumberOfVideos(num: number): void {
-    this.searchRequest.number_of_media = num;
+    this.searchRequest.numberOfMedia = num;
     this.saveState();
   }
 
   selectDuration(seconds: number): void {
-    this.searchRequest.duration_seconds = seconds;
+    this.searchRequest.durationSeconds = seconds;
     this.saveState();
   }
 
@@ -447,7 +447,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
   toggleAudio(): void {
     if (!this.isAudioGenerationDisabled) {
-      this.searchRequest.generate_audio = !this.searchRequest.generate_audio;
+      this.searchRequest.generateAudio = !this.searchRequest.generateAudio;
       this.saveState();
     }
   }
@@ -455,7 +455,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
   addNegativePhrase(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     if (value) this.negativePhrases.push(value);
-    this.searchRequest.negative_prompt = this.negativePhrases.join(', ');
+    this.searchRequest.negativePrompt = this.negativePhrases.join(', ');
 
     // Clear the input value
     event.chipInput!.clear();
@@ -465,7 +465,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
   removeNegativePhrase(phrase: string): void {
     const index = this.negativePhrases.indexOf(phrase);
     if (index >= 0) this.negativePhrases.splice(index, 1);
-    this.searchRequest.negative_prompt = this.negativePhrases.join(', ');
+    this.searchRequest.negativePrompt = this.negativePhrases.join(', ');
     this.saveState();
   }
   onPromptChanged(prompt: string) {
@@ -593,7 +593,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
           workspaceId: activeWorkspaceId,
           name,
           inputs,
-          aspectRatio: this.searchRequest.aspect_ratio,
+          aspectRatio: this.searchRequest.aspectRatio,
         })
         .pipe(finalize(() => (this.isLoading = false)))
         .subscribe({
@@ -616,7 +616,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
     const isVeo3 = [
       'veo-3.0-fast-generate-001',
       'veo-3.0-generate-001',
-    ].includes(this.searchRequest.generation_model);
+    ].includes(this.searchRequest.generationModel);
 
     if (
       (hasSourceAssets || hasSourceMediaItems) &&
@@ -649,16 +649,16 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
     // --- Build the two separate R2V reference payloads ---
     const referenceImagesPayload: {
-      asset_id: number;
-      reference_type: 'ASSET' | 'STYLE';
+      assetId: number;
+      referenceType: 'ASSET' | 'STYLE';
     }[] = [];
     const sourceMediaItemsForReference: SourceMediaItemLink[] = [];
 
     for (const refImage of this.referenceImages) {
-      if (refImage.source_asset_id) {
+      if (refImage.sourceAssetId) {
         referenceImagesPayload.push({
-          asset_id: refImage.source_asset_id,
-          reference_type: this.referenceImagesType, // Use the global type
+          assetId: refImage.sourceAssetId,
+          referenceType: this.referenceImagesType, // Use the global type
         });
       } else if (refImage.sourceMediaItem) {
         sourceMediaItemsForReference.push({
@@ -674,24 +674,24 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
     const payload: VeoRequest = {
       ...this.searchRequest,
-      start_image_asset_id:
+      startImageAssetId:
         this.currentMode === 'Frames to Video' && !this._input1IsVideo
           ? (this.startImageAssetId ?? undefined)
           : undefined,
-      source_video_asset_id:
+      sourceVideoAssetId:
         (this.currentMode === 'Frames to Video' && this._input1IsVideo) ||
         this.currentMode === 'Extend Video'
           ? (this.startImageAssetId ?? undefined)
           : undefined,
-      end_image_asset_id:
+      endImageAssetId:
         this.currentMode === 'Frames to Video'
           ? (this.endImageAssetId ?? undefined)
           : undefined,
-      reference_images:
+      referenceImages:
         this.currentMode === 'Ingredients to Video'
           ? referenceImagesPayload
           : undefined,
-      source_media_items:
+      sourceMediaItems:
         this.currentMode === 'Ingredients to Video'
           ? sourceMediaItemsForReference
           : this.currentMode === 'Frames to Video' ||
@@ -762,21 +762,21 @@ export class VideoComponent implements OnInit, AfterViewInit {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generation_model: 'veo-3.1-fast-generate-001',
-      aspect_ratio: '16:9',
-      number_of_media: 1,
+      generationModel: 'veo-3.1-fast-generate-001',
+      aspectRatio: '16:9',
+      numberOfMedia: 1,
       style: null,
       lighting: null,
-      color_and_tone: null,
+      colorAndTone: null,
       composition: null,
-      negative_prompt: '',
-      generate_audio: true,
-      duration_seconds: 8,
-      use_brand_guidelines: false,
-      enhance_prompt: false,
+      negativePrompt: '',
+      generateAudio: true,
+      durationSeconds: 8,
+      useBrandGuidelines: false,
+      enhancePrompt: false,
     };
 
-    const model = this.generationModels.find(m => m.value === this.searchRequest.generation_model) ?? this.generationModels[0];
+    const model = this.generationModels.find(m => m.value === this.searchRequest.generationModel) ?? this.generationModels[0];
     this.selectedGenerationModel = model.viewValue;
       
     this.videoStateService.resetState();
@@ -793,7 +793,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
     if (this.templateParams.numMedia) {
       console.log('Setting number of images:', this.templateParams.numMedia);
-      this.searchRequest.number_of_media = this.templateParams.numMedia;
+      this.searchRequest.numberOfMedia = this.templateParams.numMedia;
     }
 
     if (this.templateParams.model) {
@@ -802,7 +802,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
         m.value.toLowerCase().includes(templateModel.toLowerCase()),
       );
       if (modelOption) {
-        this.searchRequest.generation_model = modelOption.value;
+        this.searchRequest.generationModel = modelOption.value;
         this.selectedGenerationModel = modelOption.viewValue;
       }
     }
@@ -813,13 +813,13 @@ export class VideoComponent implements OnInit, AfterViewInit {
         r => r.value === templateAspectRatio,
       );
       if (aspectRatioOption) {
-        this.searchRequest.aspect_ratio = aspectRatioOption.value;
+        this.searchRequest.aspectRatio = aspectRatioOption.value;
         this.selectedAspectRatio = aspectRatioOption.viewValue;
       }
     }
 
     if (this.templateParams.durationSeconds)
-      this.searchRequest.duration_seconds = this.templateParams.durationSeconds;
+      this.searchRequest.durationSeconds = this.templateParams.durationSeconds;
 
     if (this.templateParams.style) {
       this.searchRequest.style = this.templateParams.style;
@@ -830,7 +830,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
     }
 
     if (this.templateParams.colorAndTone) {
-      this.searchRequest.color_and_tone = this.templateParams.colorAndTone;
+      this.searchRequest.colorAndTone = this.templateParams.colorAndTone;
     }
 
     if (this.templateParams.composition) {
@@ -842,7 +842,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
         .split(',')
         .map((p: string) => p.trim())
         .filter(Boolean);
-      this.searchRequest.negative_prompt = this.negativePhrases.join(', ');
+      this.searchRequest.negativePrompt = this.negativePhrases.join(', ');
     }
 
     this.saveState();
@@ -891,7 +891,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
       const isVeo30 = [
         'veo-3.0-fast-generate-001',
         'veo-3.0-generate-001',
-      ].includes(this.searchRequest.generation_model);
+      ].includes(this.searchRequest.generationModel);
 
       if (isVeo30) {
         const veo31Model = this.generationModels.find(
@@ -959,8 +959,8 @@ export class VideoComponent implements OnInit, AfterViewInit {
           ? 'start_frame'
           : 'end_frame';
       this.sourceMediaItems[index] = {
-        media_item_id: selection.mediaItem.id,
-        media_index: selection.selectedIndex,
+        mediaItemId: selection.mediaItem.id,
+        mediaIndex: selection.selectedIndex,
         role: finalRole,
       };
     }
@@ -1109,7 +1109,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
     const isVeo3 = [
       'veo-3.0-fast-generate-001',
       'veo-3.0-generate-001',
-    ].includes(this.searchRequest.generation_model);
+    ].includes(this.searchRequest.generationModel);
 
     const image1Set = !!this.startImageAssetId || !!this.sourceMediaItems[0];
     const image2Set = !!this.endImageAssetId || !!this.sourceMediaItems[1];
@@ -1297,7 +1297,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
         r => r.value === remixState.aspectRatio,
       );
       if (aspectRatioOption) {
-        this.searchRequest.aspect_ratio = aspectRatioOption.value;
+        this.searchRequest.aspectRatio = aspectRatioOption.value;
         this.selectedAspectRatio = aspectRatioOption.viewValue;
       }
     }
@@ -1314,8 +1314,8 @@ export class VideoComponent implements OnInit, AfterViewInit {
     const remixState = {
       sourceMediaItems: [
         {
-          media_item_id: event.mediaItem.id,
-          media_index: event.selectedIndex,
+          mediaItemId: event.mediaItem.id,
+          mediaIndex: event.selectedIndex,
           role: 'video_extension_source',
         },
       ],
@@ -1329,8 +1329,8 @@ export class VideoComponent implements OnInit, AfterViewInit {
     const remixState = {
       sourceMediaItems: [
         {
-          media_item_id: event.mediaItem.id,
-          media_index: event.selectedIndex,
+          mediaItemId: event.mediaItem.id,
+          mediaIndex: event.selectedIndex,
           role: 'concatenation_source',
         },
       ],
@@ -1347,7 +1347,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
   openImageSelectorForReference(): void {
     const config = MODEL_CONFIGS.find(
-      cfg => cfg.value === this.searchRequest.generation_model,
+      cfg => cfg.value === this.searchRequest.generationModel,
     );
     const maxReferenceImages = config?.capabilities.maxReferenceImages ?? 3;
     const remainingSlots = maxReferenceImages - this.referenceImages.length;
@@ -1375,7 +1375,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
         if (this.referenceImages.length < maxReferenceImages) {
           if ('gcsUri' in res) {
             this.referenceImages.push({
-              source_asset_id: res.id,
+              sourceAssetId: res.id,
               previewUrl: res.presignedUrl || '',
             });
           } else {
@@ -1383,9 +1383,9 @@ export class VideoComponent implements OnInit, AfterViewInit {
             if (previewUrl) {
               this.referenceImages.push({
                 previewUrl: previewUrl,
-                source_media_item: {
-                  media_item_id: res.mediaItem.id,
-                  media_index: res.selectedIndex,
+                sourceMediaItem: {
+                  mediaItemId: res.mediaItem.id,
+                  mediaIndex: res.selectedIndex,
                   role: 'image_reference_asset', // Role is now set dynamically in searchTerm
                 },
               });
@@ -1415,7 +1415,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
       dialogRef.afterClosed().subscribe((result: SourceAssetResponseDto) => {
         if (result && result.id) {
           this.referenceImages.push({
-            source_asset_id: result.id,
+            sourceAssetId: result.id,
             previewUrl: result.presignedUrl || '',
           });
           this.handleReferenceImageAdded();
@@ -1451,7 +1451,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
       );
       if (
         veo31Model &&
-        this.searchRequest.generation_model !== veo31Model.value
+        this.searchRequest.generationModel !== veo31Model.value
       ) {
         this.selectModel(veo31Model);
         handleSuccessSnackbar(
@@ -1480,7 +1480,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
       if (asset.role === 'image_reference_asset') {
         if (this.referenceImages.length < 3) {
           this.referenceImages.push({
-            source_asset_id: asset.assetId,
+            sourceAssetId: asset.assetId,
             previewUrl: asset.presignedUrl,
           });
           hasAddedReferenceImage = true;

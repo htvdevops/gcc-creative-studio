@@ -45,7 +45,7 @@ export const GENERATE_IMAGE_STEP_CONFIG: StepConfig = {
       defaultValue: 'imagen-4.0-generate-001',
     },
     {
-      name: 'aspect_ratio',
+      name: 'aspectRatio',
       label: 'Aspect Ratio',
       type: 'select',
       options: [],

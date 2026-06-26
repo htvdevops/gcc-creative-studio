@@ -139,7 +139,7 @@ export class BatchExecutionModalComponent {
   }
 
   normalizeHeader(header: string): string {
-    // "Aspect Ratio" -> "aspect_ratio"
+    // "Aspect Ratio" -> "aspectRatio"
     return header.trim().toLowerCase().replace(/\s+/g, '_');
   }
 
@@ -163,7 +163,7 @@ export class BatchExecutionModalComponent {
         // We strictly use the mapping to construct args
         const items = this.parsedItems.map((row, index) => {
           const args: any = {
-            workspace_id: workspaceId,
+            workspaceId: workspaceId,
           };
 
           // Only include mapped columns

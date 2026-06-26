@@ -280,7 +280,7 @@ export class MediaDetailComponent implements OnDestroy {
     this.loadingService.show();
 
     // Note: The 'createTemplateFromMediaItem' method should be implemented in a relevant service (e.g., TemplateService or GalleryService).
-    // It should perform a POST request to the `/from-media-item/{media_item_id}` endpoint.
+    // It should perform a POST request to the `/from-media-item/{mediaItemId}` endpoint.
     this.galleryService
       .createTemplateFromMediaItem(this.mediaItem.id)
       .pipe(first())

@@ -100,23 +100,23 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // This object holds the current state of all user selections.
   searchRequest: ImagenRequest = {
     prompt: '',
-    generation_model: 'gemini-3.1-flash-image', 
-    aspect_ratio: '1:1',
-    number_of_media: 1,
+    generationModel: 'gemini-3.1-flash-image', 
+    aspectRatio: '1:1',
+    numberOfMedia: 1,
     style: null,
     lighting: null,
-    color_and_tone: null,
+    colorAndTone: null,
     composition: null,
-    add_watermark: false,
-    negative_prompt: '',
-    use_brand_guidelines: false,
-    enhance_prompt: false,
-    google_search: false,
+    addWatermark: false,
+    negativePrompt: '',
+    useBrandGuidelines: false,
+    enhancePrompt: false,
+    googleSearch: false,
     resolution: '1K',
-    output_mime_type: 'image/png',
+    outputMimeType: 'image/png',
     temperature: 1,
-    max_output_tokens: 32768,
-    top_p: 0.95,
+    maxOutputTokens: 32768,
+    topP: 0.95,
   };
 
   modes = [
@@ -137,7 +137,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     m => m.type === 'IMAGE',
   );
   selectedGenerationModelObject =
-    this.generationModels.find(m => m.value === this.searchRequest.generation_model) ?? this.generationModels[0];
+    this.generationModels.find(m => m.value === this.searchRequest.generationModel) ?? this.generationModels[0];
   selectedGenerationModel = this.selectedGenerationModelObject.viewValue;
   aspectRatioOptions: {
     value: string;
@@ -283,7 +283,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     {value: false, viewValue: 'No'},
   ];
   selectedWatermark = this.watermarkOptions.find(
-    o => o.value === this.searchRequest.add_watermark,
+    o => o.value === this.searchRequest.addWatermark,
   )!.viewValue;
 
   // --- Private properties for animation and gallery ---
@@ -413,23 +413,23 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(state => {
       this.searchRequest.prompt = state.prompt;
-      this.searchRequest.negative_prompt = state.negativePrompt;
-      this.searchRequest.aspect_ratio = state.aspectRatio;
-      this.searchRequest.generation_model = state.model;
+      this.searchRequest.negativePrompt = state.negativePrompt;
+      this.searchRequest.aspectRatio = state.aspectRatio;
+      this.searchRequest.generationModel = state.model;
       this.searchRequest.lighting = state.lighting;
-      this.searchRequest.add_watermark = state.watermark;
-      this.searchRequest.google_search = state.googleSearch;
+      this.searchRequest.addWatermark = state.watermark;
+      this.searchRequest.googleSearch = state.googleSearch;
       this.searchRequest.resolution = state.resolution as
         | '4K'
         | '1K'
         | '2K'
         | undefined;
       this.searchRequest.style = state.style;
-      this.searchRequest.color_and_tone = state.colorAndTone;
-      this.searchRequest.number_of_media = state.numberOfMedia;
+      this.searchRequest.colorAndTone = state.colorAndTone;
+      this.searchRequest.numberOfMedia = state.numberOfMedia;
       this.searchRequest.composition = state.composition;
-      this.searchRequest.use_brand_guidelines = state.useBrandGuidelines;
-      this.searchRequest.enhance_prompt = state.enhancePrompt;
+      this.searchRequest.useBrandGuidelines = state.useBrandGuidelines;
+      this.searchRequest.enhancePrompt = state.enhancePrompt;
       this.currentMode = state.mode;
 
       // Update local variables to reflect state
@@ -454,19 +454,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public saveState() {
     this.imageStateService.updateState({
       prompt: this.searchRequest.prompt,
-      negativePrompt: this.searchRequest.negative_prompt || '',
-      aspectRatio: this.searchRequest.aspect_ratio,
-      model: this.searchRequest.generation_model,
+      negativePrompt: this.searchRequest.negativePrompt || '',
+      aspectRatio: this.searchRequest.aspectRatio,
+      model: this.searchRequest.generationModel,
       lighting: this.searchRequest.lighting || null,
-      watermark: this.searchRequest.add_watermark,
-      googleSearch: this.searchRequest.google_search,
+      watermark: this.searchRequest.addWatermark,
+      googleSearch: this.searchRequest.googleSearch,
       resolution: this.searchRequest.resolution,
       style: this.searchRequest.style || null,
-      colorAndTone: this.searchRequest.color_and_tone || null,
-      numberOfMedia: this.searchRequest.number_of_media,
+      colorAndTone: this.searchRequest.colorAndTone || null,
+      numberOfMedia: this.searchRequest.numberOfMedia,
       composition: this.searchRequest.composition || null,
-      useBrandGuidelines: this.searchRequest.use_brand_guidelines,
-      enhancePrompt: this.searchRequest.enhance_prompt || false,
+      useBrandGuidelines: this.searchRequest.useBrandGuidelines,
+      enhancePrompt: this.searchRequest.enhancePrompt || false,
       mode: this.currentMode,
     });
   }
@@ -474,24 +474,24 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private restoreState() {
     const state = this.imageStateService.getState();
     this.searchRequest.prompt = state.prompt;
-    this.searchRequest.negative_prompt = state.negativePrompt;
-    this.searchRequest.aspect_ratio = state.aspectRatio;
-    this.searchRequest.generation_model = state.model;
+    this.searchRequest.negativePrompt = state.negativePrompt;
+    this.searchRequest.aspectRatio = state.aspectRatio;
+    this.searchRequest.generationModel = state.model;
     this.searchRequest.lighting =
       state.lighting === 'none' ? null : state.lighting;
-    this.searchRequest.add_watermark = state.watermark;
-    this.searchRequest.google_search = state.googleSearch;
+    this.searchRequest.addWatermark = state.watermark;
+    this.searchRequest.googleSearch = state.googleSearch;
     this.searchRequest.resolution = state.resolution as
       | '4K'
       | '1K'
       | '2K'
       | undefined;
     this.searchRequest.style = state.style;
-    this.searchRequest.color_and_tone = state.colorAndTone;
-    this.searchRequest.number_of_media = state.numberOfMedia;
+    this.searchRequest.colorAndTone = state.colorAndTone;
+    this.searchRequest.numberOfMedia = state.numberOfMedia;
     this.searchRequest.composition = state.composition;
-    this.searchRequest.use_brand_guidelines = state.useBrandGuidelines;
-    this.searchRequest.enhance_prompt = state.enhancePrompt;
+    this.searchRequest.useBrandGuidelines = state.useBrandGuidelines;
+    this.searchRequest.enhancePrompt = state.enhancePrompt;
 
     this.negativePhrases = state.negativePrompt
       ? state.negativePrompt.split(', ').filter(Boolean)
@@ -535,7 +535,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // If current aspect ratio is not supported, switch to the first supported one (usually 1:1)
     if (
       !capabilities.supportedAspectRatios.includes(
-        this.searchRequest.aspect_ratio,
+        this.searchRequest.aspectRatio,
       )
     ) {
       const firstSupported = this.aspectRatioOptions.find(r => !r.disabled);
@@ -555,7 +555,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.templateParams.numMedia) {
-      this.searchRequest.number_of_media = this.templateParams.numMedia;
+      this.searchRequest.numberOfMedia = this.templateParams.numMedia;
     }
 
     if (this.templateParams.model) {
@@ -587,7 +587,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.templateParams.colorAndTone) {
-      this.searchRequest.color_and_tone = this.templateParams.colorAndTone;
+      this.searchRequest.colorAndTone = this.templateParams.colorAndTone;
     }
 
     if (this.templateParams.composition) {
@@ -599,7 +599,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         .split(',')
         .map((p: string) => p.trim())
         .filter(Boolean);
-      this.searchRequest.negative_prompt = this.negativePhrases.join(', ');
+      this.searchRequest.negativePrompt = this.negativePhrases.join(', ');
     }
 
     // Save the state so it persists and isn't overwritten by ngOnInit subscription
@@ -625,7 +625,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectModel(model: GenerationModelConfig): void {
-    this.searchRequest.generation_model = model.value;
+    this.searchRequest.generationModel = model.value;
     this.selectedGenerationModel = model.viewValue;
     this.selectedGenerationModelObject = model;
     this.applyModelSettings(model);
@@ -642,14 +642,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Reset Google Search if not supported
     if (!capabilities.supportsGoogleSearch) {
-      this.searchRequest.google_search = false;
+      this.searchRequest.googleSearch = false;
     }
 
     this.saveState();
   }
 
   selectAspectRatio(ratio: {value: string; viewValue: string}): void {
-    this.searchRequest.aspect_ratio = ratio.value;
+    this.searchRequest.aspectRatio = ratio.value;
     this.selectedAspectRatio = ratio.viewValue;
     this.saveState();
   }
@@ -715,16 +715,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectColor(color: string): void {
-    this.searchRequest.color_and_tone === color
-      ? (this.searchRequest.color_and_tone = null)
-      : (this.searchRequest.color_and_tone = color);
+    this.searchRequest.colorAndTone === color
+      ? (this.searchRequest.colorAndTone = null)
+      : (this.searchRequest.colorAndTone = color);
     this.saveState();
   }
 
   selectNumberOfImages(num: number): void {
-    this.searchRequest.number_of_media === num
-      ? (this.searchRequest.number_of_media = 4)
-      : (this.searchRequest.number_of_media = num);
+    this.searchRequest.numberOfMedia === num
+      ? (this.searchRequest.numberOfMedia = 4)
+      : (this.searchRequest.numberOfMedia = num);
     this.saveState();
   }
 
@@ -736,7 +736,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectWatermark(option: {value: boolean; viewValue: string}): void {
-    this.searchRequest.add_watermark = option.value;
+    this.searchRequest.addWatermark = option.value;
     this.selectedWatermark = option.viewValue;
     this.saveState();
   }
@@ -744,7 +744,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   addNegativePhrase(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     if (value) this.negativePhrases.push(value);
-    this.searchRequest.negative_prompt = this.negativePhrases.join(', ');
+    this.searchRequest.negativePrompt = this.negativePhrases.join(', ');
 
     // Clear the input value
     event.chipInput!.clear();
@@ -754,7 +754,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   removeNegativePhrase(phrase: string): void {
     const index = this.negativePhrases.indexOf(phrase);
     if (index >= 0) this.negativePhrases.splice(index, 1);
-    this.searchRequest.negative_prompt = this.negativePhrases.join(', ');
+    this.searchRequest.negativePrompt = this.negativePhrases.join(', ');
     this.saveState();
   }
 
@@ -772,7 +772,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       'imagen-4.0-generate-001',
       'imagen-4.0-ultra-generate-001',
       'imagen-4.0-fast-generate-001',
-    ].includes(this.searchRequest.generation_model);
+    ].includes(this.searchRequest.generationModel);
 
     if (hasSourceAssets && isImagen4) {
       const imagen3Model = this.generationModels.find(
@@ -792,10 +792,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const sourceAssetIds: number[] = [];
 
     this.referenceImages.forEach(img => {
-      if (img.source_media_item) {
-        validSourceMediaItems.push(img.source_media_item);
-      } else if (img.source_asset_id) {
-        sourceAssetIds.push(img.source_asset_id);
+      if (img.sourceMediaItem) {
+        validSourceMediaItems.push(img.sourceMediaItem);
+      } else if (img.sourceAssetId) {
+        sourceAssetIds.push(img.sourceAssetId);
       }
     });
 
@@ -811,17 +811,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const payload: ImagenRequest = {
       ...this.searchRequest,
-      negative_prompt: this.negativePhrases.join(', '),
-      source_media_items:
+      negativePrompt: this.negativePhrases.join(', '),
+      sourceMediaItems:
         this.currentMode === 'Ingredients to Image' &&
         validSourceMediaItems.length
           ? validSourceMediaItems
           : undefined,
-      source_asset_ids:
+      sourceAssetIds:
         this.currentMode === 'Ingredients to Image' && sourceAssetIds.length
           ? sourceAssetIds
           : undefined,
-      workspace_id: activeWorkspaceId ?? undefined,
+      workspaceId: activeWorkspaceId ?? undefined,
     };
 
     this.isImageGenerating = true;
@@ -884,28 +884,28 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generation_model: 'gemini-3.1-flash-image', 
-      aspect_ratio: '1:1',
-      number_of_media: 1,
+      generationModel: 'gemini-3.1-flash-image', 
+      aspectRatio: '1:1',
+      numberOfMedia: 1,
       style: null,
       lighting: null,
-      color_and_tone: null,
+      colorAndTone: null,
       composition: null,
-      add_watermark: false,
-      negative_prompt: '',
-      use_brand_guidelines: false,
-      google_search: false,
+      addWatermark: false,
+      negativePrompt: '',
+      useBrandGuidelines: false,
+      googleSearch: false,
       resolution: '1K',
-      output_mime_type: 'image/png',
+      outputMimeType: 'image/png',
       temperature: 1,
-      max_output_tokens: 32768,
-      top_p: 0.95,
+      maxOutputTokens: 32768,
+      topP: 0.95,
     };
     this.negativePhrases = [];
     this.referenceImages = [];
     this.sourceMediaItems = [];
     this.selectedGenerationModelObject =
-      this.generationModels.find(m => m.value === this.searchRequest.generation_model) ?? this.generationModels[0];
+      this.generationModels.find(m => m.value === this.searchRequest.generationModel) ?? this.generationModels[0];
     this.selectedGenerationModel = this.selectedGenerationModelObject.viewValue;
     this.selectedAspectRatio = this.aspectRatioOptions[0].viewValue;
     this.imageStateService.resetState();
@@ -950,9 +950,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // Add to reference images
     const refImage: ReferenceImage = {
       previewUrl: imageUrl,
-      source_media_item: {
-        media_item_id: mediaItemId,
-        media_index: index,
+      sourceMediaItem: {
+        mediaItemId: mediaItemId,
+        mediaIndex: index,
         role: 'input',
       },
       isNew: true,
@@ -970,13 +970,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   applyRemixState(state: any) {
     this.searchRequest.prompt = state.prompt;
-    this.searchRequest.aspect_ratio = state.aspectRatio;
-    this.searchRequest.generation_model = state.generationModel;
+    this.searchRequest.aspectRatio = state.aspectRatio;
+    this.searchRequest.generationModel = state.generationModel;
     this.searchRequest.style = state.style;
     this.searchRequest.lighting = state.lighting;
-    this.searchRequest.color_and_tone = state.colorAndTone;
+    this.searchRequest.colorAndTone = state.colorAndTone;
     this.searchRequest.composition = state.composition;
-    this.searchRequest.negative_prompt = state.negativePrompt;
+    this.searchRequest.negativePrompt = state.negativePrompt;
     this.negativePhrases = state.negativePrompt
       ? state.negativePrompt.split(', ')
       : [];
@@ -984,7 +984,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (state.sourceAssetIds && state.sourceAssetIds.length > 0) {
       state.sourceAssetIds.forEach((assetId: number, index: number) => {
         const isDuplicate = this.referenceImages.some(
-          img => img.source_asset_id === assetId,
+          img => img.sourceAssetId === assetId,
         );
         if (!isDuplicate) {
           this.referenceImages.push({
@@ -992,7 +992,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               (state.previewUrls && state.previewUrls[index]) ||
               state.previewUrl ||
               '',
-            source_asset_id: assetId,
+            sourceAssetId: assetId,
           });
         } else {
           handleInfoSnackbar(this._snackBar, 'Image already added.');
@@ -1005,9 +1005,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         (item: SourceMediaItemLink, index: number) => {
           const isDuplicate = this.referenceImages.some(
             img =>
-              img.source_media_item &&
-              img.source_media_item.media_item_id === item.media_item_id &&
-              img.source_media_item.media_index === item.media_index,
+              img.sourceMediaItem &&
+              img.sourceMediaItem.mediaItemId === item.mediaItemId &&
+              img.sourceMediaItem.mediaIndex === item.mediaIndex,
           );
           if (!isDuplicate) {
             this.referenceImages.push({
@@ -1015,7 +1015,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 (state.previewUrls && state.previewUrls[index]) ||
                 state.previewUrl ||
                 '',
-              source_media_item: item,
+              sourceMediaItem: item,
             });
           } else {
             handleInfoSnackbar(this._snackBar, 'Image already added.');
@@ -1122,8 +1122,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         selection.mediaItem.presignedUrls?.[selection.selectedIndex || 0] ||
         null;
       sourceMediaItem = {
-        media_item_id: selection.mediaItem.id,
-        media_index: selection.selectedIndex,
+        mediaItemId: selection.mediaItem.id,
+        mediaIndex: selection.selectedIndex,
         role: 'input',
       };
     } else {
@@ -1135,19 +1135,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (previewUrl) {
       const refImage: ReferenceImage = {
         previewUrl,
-        source_asset_id: sourceAssetId || undefined,
-        source_media_item: sourceMediaItem || undefined,
+        sourceAssetId: sourceAssetId || undefined,
+        sourceMediaItem: sourceMediaItem || undefined,
         isNew: true,
       };
 
       // Check for duplicates
       const isDuplicate = this.referenceImages.some(img => {
-        if (sourceAssetId && img.source_asset_id === sourceAssetId) return true;
+        if (sourceAssetId && img.sourceAssetId === sourceAssetId) return true;
         if (
           sourceMediaItem &&
-          img.source_media_item &&
-          img.source_media_item.media_item_id === sourceMediaItem.media_item_id &&
-          img.source_media_item.media_index === sourceMediaItem.media_index
+          img.sourceMediaItem &&
+          img.sourceMediaItem.mediaItemId === sourceMediaItem.mediaItemId &&
+          img.sourceMediaItem.mediaIndex === sourceMediaItem.mediaIndex
         )
           return true;
         return false;
@@ -1212,8 +1212,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const sourceMediaItem: SourceMediaItemLink = {
-      media_item_id: this.imagenDocuments.id,
-      media_index: event.index,
+      mediaItemId: this.imagenDocuments.id,
+      mediaIndex: event.index,
       role: event.role === 'start' ? 'start_frame' : 'end_frame',
     };
 
@@ -1257,9 +1257,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private applySourceAssets(sourceAssets: EnrichedSourceAsset[]) {
     this.referenceImages = sourceAssets.map(asset => ({
       previewUrl: asset.presignedUrl,
-      source_asset_id: asset.assetId,
+      sourceAssetId: asset.assetId,
       file: undefined,
-      source_media_item: undefined,
+      sourceMediaItem: undefined,
     }));
 
     if (this.referenceImages.length > 0) {
