@@ -92,7 +92,35 @@ export class SearchService {
    */
   startImagenGeneration(searchRequest: ImagenRequest): Observable<MediaItem> {
     const searchURL = `${environment.backendURL}/images/generate-images`;
-    return this.http.post<MediaItem>(searchURL, searchRequest).pipe(
+    const snakeCaseBody = {
+      prompt: searchRequest.prompt,
+      generation_model: searchRequest.generationModel,
+      aspect_ratio: searchRequest.aspectRatio,
+      number_of_media: searchRequest.numberOfMedia,
+      style: searchRequest.style,
+      negative_prompt: searchRequest.negativePrompt,
+      color_and_tone: searchRequest.colorAndTone,
+      lighting: searchRequest.lighting,
+      composition: searchRequest.composition,
+      add_watermark: searchRequest.addWatermark,
+      upscale_factor: searchRequest.upscaleFactor,
+      source_asset_ids: searchRequest.sourceAssetIds,
+      source_media_items: searchRequest.sourceMediaItems?.map(item => ({
+        media_item_id: item.mediaItemId,
+        media_index: item.mediaIndex,
+        role: item.role
+      })),
+      workspace_id: searchRequest.workspaceId,
+      use_brand_guidelines: searchRequest.useBrandGuidelines,
+      enhance_prompt: searchRequest.enhancePrompt,
+      google_search: searchRequest.googleSearch,
+      resolution: searchRequest.resolution,
+      output_mime_type: searchRequest.outputMimeType,
+      temperature: searchRequest.temperature,
+      max_output_tokens: searchRequest.maxOutputTokens,
+      top_p: searchRequest.topP
+    };
+    return this.http.post<MediaItem>(searchURL, snakeCaseBody).pipe(
       tap(initialItem => {
         this.activeImageJob.next(initialItem);
         this.startImagenPolling(initialItem.id);
@@ -156,8 +184,36 @@ export class SearchService {
    */
   startVeoGeneration(searchRequest: VeoRequest): Observable<MediaItem> {
     const searchURL = `${environment.backendURL}/videos/generate-videos`;
+    const snakeCaseBody = {
+      prompt: searchRequest.prompt,
+      generation_model: searchRequest.generationModel,
+      aspect_ratio: searchRequest.aspectRatio,
+      number_of_media: searchRequest.numberOfMedia,
+      style: searchRequest.style,
+      lighting: searchRequest.lighting,
+      color_and_tone: searchRequest.colorAndTone,
+      composition: searchRequest.composition,
+      negative_prompt: searchRequest.negativePrompt,
+      generate_audio: searchRequest.generateAudio,
+      duration_seconds: searchRequest.durationSeconds,
+      start_image_asset_id: searchRequest.startImageAssetId,
+      end_image_asset_id: searchRequest.endImageAssetId,
+      source_video_asset_id: searchRequest.sourceVideoAssetId,
+      source_media_items: searchRequest.sourceMediaItems?.map(item => ({
+        media_item_id: item.mediaItemId,
+        media_index: item.mediaIndex,
+        role: item.role
+      })),
+      workspace_id: searchRequest.workspaceId,
+      use_brand_guidelines: searchRequest.useBrandGuidelines,
+      enhance_prompt: searchRequest.enhancePrompt,
+      reference_images: searchRequest.referenceImages?.map(img => ({
+        asset_id: img.assetId,
+        reference_type: img.referenceType
+      }))
+    };
 
-    return this.http.post<MediaItem>(searchURL, searchRequest).pipe(
+    return this.http.post<MediaItem>(searchURL, snakeCaseBody).pipe(
       // The 'tap' operator lets us perform a side-effect (like starting polling)
       // without affecting the value passed to the component's subscription.
       tap(initialItem => {
@@ -171,7 +227,12 @@ export class SearchService {
 
   concatenateVideos(payload: ConcatenateVideosDto): Observable<MediaItem> {
     const url = `${environment.backendURL}/videos/concatenate`;
-    return this.http.post<MediaItem>(url, payload).pipe(
+    return this.http.post<MediaItem>(url, {
+      workspace_id: payload.workspaceId,
+      name: payload.name,
+      inputs: payload.inputs,
+      aspect_ratio: payload.aspectRatio,
+    }).pipe(
       tap(initialResponse => {
         this.activeVideoJob.next(initialResponse);
         this.startVeoPolling(initialResponse.id);
@@ -245,7 +306,10 @@ export class SearchService {
   }): Observable<{prompt: string}> {
     return this.http.post<{prompt: string}>(
       `${environment.backendURL}/gemini/rewrite-prompt`,
-      payload,
+      {
+        target_type: payload.targetType,
+        user_prompt: payload.userPrompt,
+      },
     );
   }
 

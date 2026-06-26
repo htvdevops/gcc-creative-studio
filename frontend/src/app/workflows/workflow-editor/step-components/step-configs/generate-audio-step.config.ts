@@ -47,7 +47,7 @@ const LANGUAGE_OPTIONS = [
 ];
 
 export const GENERATE_AUDIO_STEP_CONFIG: StepConfig = {
-  type: 'generate_audio',
+  type: 'generateAudio',
   title: 'Generate Audio',
   icon: 'music_note',
   inputs: [
@@ -81,7 +81,7 @@ export const GENERATE_AUDIO_STEP_CONFIG: StepConfig = {
       defaultValue: 'en-US',
     },
     {
-      name: 'negative_prompt',
+      name: 'negativePrompt',
       label: 'Negative Prompt (Music Only)',
       type: 'text',
       defaultValue: '',

@@ -210,7 +210,7 @@ export class WorkflowService implements OnDestroy {
     const payload = {
       args: {
         ...args,
-        workspace_id: workspaceId,
+        workspaceId: workspaceId,
       },
     };
     return this.http.post<ExecutionResponse>(
@@ -233,7 +233,7 @@ export class WorkflowService implements OnDestroy {
       ...item,
       args: {
         ...item.args,
-        workspace_id: workspaceId,
+        workspaceId: workspaceId,
       },
     }));
 

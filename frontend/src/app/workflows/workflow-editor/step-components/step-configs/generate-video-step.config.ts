@@ -72,7 +72,7 @@ export const GENERATE_VIDEO_STEP_CONFIG: StepConfig = {
       defaultValue: 'Text to Video',
     },
     {
-      name: 'aspect_ratio',
+      name: 'aspectRatio',
       label: 'Aspect Ratio',
       type: 'select',
       options: [],

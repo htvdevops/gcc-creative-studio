@@ -59,6 +59,15 @@ export class AudioService {
   constructor(private http: HttpClient) {}
 
   generateAudio(request: CreateAudioDto): Observable<MediaItem> {
-    return this.http.post<MediaItem>(this.apiUrl, request);
+    return this.http.post<MediaItem>(this.apiUrl, {
+      model: request.model,
+      prompt: request.prompt,
+      workspace_id: request.workspaceId,
+      negative_prompt: request.negativePrompt,
+      sample_count: request.sampleCount,
+      seed: request.seed,
+      language_code: request.languageCode,
+      voice_name: request.voiceName,
+    });
   }
 }

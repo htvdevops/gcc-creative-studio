@@ -84,7 +84,7 @@ export class StepExecutionDetailsComponent implements OnInit {
     if (typeof value === 'number') {
       return `media:${value}`;
     } else if (value && typeof value === 'object') {
-      const assetId = value.sourceAssetId ?? value.source_asset_id;
+      const assetId = value.sourceAssetId ?? value.sourceAssetId;
       if (assetId) {
         return `asset:${assetId}`;
       } else if (value.sourceMediaItem?.mediaItemId) {
@@ -100,7 +100,7 @@ export class StepExecutionDetailsComponent implements OnInit {
     } else if (value && typeof value === 'object') {
       const id =
         value.sourceAssetId ??
-        value.source_asset_id ??
+        value.sourceAssetId ??
         value.sourceMediaItem?.mediaItemId;
       return id !== undefined && id !== null ? id : null;
     }

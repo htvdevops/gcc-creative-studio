@@ -65,7 +65,7 @@ export class AddStepModalComponent {
       icon: 'movie',
     },
     {
-      type: 'generate_audio',
+      type: 'generateAudio',
       label: 'Generate Audio',
       description: 'Generates audio (music or speech) from a text prompt.',
       icon: 'music_note',

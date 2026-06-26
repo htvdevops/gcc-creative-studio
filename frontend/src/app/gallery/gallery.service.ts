@@ -149,9 +149,26 @@ export class GalleryService implements OnDestroy {
   ): Observable<PaginatedGalleryResponse> {
     this.isLoading$.next(true);
 
+    const snakeCaseBody = {
+      limit: body.limit,
+      offset: body.offset,
+      start_after: body.startAfter,
+      user_email: body.userEmail,
+      mime_type: body.mimeType,
+      model: body.model,
+      status: body.status,
+      workspace_id: body.workspaceId,
+      include_deleted: body.includeDeleted,
+      start_date: body.startDate,
+      end_date: body.endDate,
+      item_type: body.itemType,
+      query: body.query,
+      tags: body.tags
+    };
+
     const galleryUrl = `${environment.backendURL}/gallery/search`;
     return this.http
-      .post<PaginatedGalleryResponse>(galleryUrl, body)
+      .post<PaginatedGalleryResponse>(galleryUrl, snakeCaseBody)
       .pipe(shareReplay(1));
   }
 
@@ -256,7 +273,7 @@ export class GalleryService implements OnDestroy {
       metadata: metadata,
       mimeType: metadata.mimeType || metadata.mime_type || item.mimeType,
       aspectRatio:
-        metadata.aspectRatio || metadata.aspect_ratio || item.aspectRatio,
+        metadata.aspectRatio || metadata.aspectRatio || item.aspectRatio,
       prompt:
         item.prompt ||
         metadata.prompt ||
@@ -290,7 +307,7 @@ export class GalleryService implements OnDestroy {
       duration: item.duration || metadata.duration,
       resolution: item.resolution || metadata.resolution,
       googleSearch:
-        item.googleSearch ?? metadata.googleSearch ?? metadata.google_search,
+        item.googleSearch ?? metadata.googleSearch ?? metadata.googleSearch,
       groundingMetadata:
         item.groundingMetadata ||
         metadata.groundingMetadata ||
@@ -302,14 +319,14 @@ export class GalleryService implements OnDestroy {
       negativePrompt:
         item.negativePrompt ||
         metadata.negativePrompt ||
-        metadata.negative_prompt,
+        metadata.negativePrompt,
       enrichedSourceAssets:
         item.enrichedSourceAssets || metadata.enriched_source_assets,
       enrichedSourceMediaItems:
         item.enrichedSourceMediaItems || metadata.enriched_source_media_items,
       style: item.style || metadata.style,
       lighting: item.lighting || metadata.lighting,
-      colorAndTone: item.colorAndTone || metadata.color_and_tone,
+      colorAndTone: item.colorAndTone || metadata.colorAndTone,
       composition: item.composition || metadata.composition,
       modifiers: item.modifiers || metadata.modifiers,
       comment: item.comment || metadata.comment,
@@ -321,7 +338,7 @@ export class GalleryService implements OnDestroy {
         item.error_message ||
         metadata.errorMessage ||
         metadata.error_message,
-      addWatermark: item.addWatermark ?? metadata.add_watermark,
+      addWatermark: item.addWatermark ?? metadata.addWatermark,
       originalGcsUris: item.originalGcsUris || item.original_gcs_uris || [],
       originalPresignedUrls:
         item.originalPresignedUrls || item.original_presigned_urls || [],
@@ -344,7 +361,7 @@ export class GalleryService implements OnDestroy {
     const url = `${environment.backendURL}/gallery/bulk-delete`;
     return this.http.post<{deleted_count: number}>(url, {
       items,
-      workspace_id: workspaceId,
+      workspaceId: workspaceId,
     });
   }
 
@@ -355,7 +372,7 @@ export class GalleryService implements OnDestroy {
     const url = `${environment.backendURL}/gallery/bulk-download`;
     return this.http.post(
       url,
-      {items, workspace_id: workspaceId},
+      {items, workspaceId: workspaceId},
       {responseType: 'blob'},
     );
   }

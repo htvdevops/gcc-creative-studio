@@ -16,67 +16,67 @@
 
 export type ImagenRequest = {
   prompt: string;
-  generation_model: string;
-  aspect_ratio: string;
-  number_of_media: number;
+  generationModel: string;
+  aspectRatio: string;
+  numberOfMedia: number;
   style?: string | null;
-  negative_prompt: string | null;
-  color_and_tone?: string | null;
+  negativePrompt: string | null;
+  colorAndTone?: string | null;
   lighting?: string | null;
   composition?: string | null;
-  add_watermark: boolean;
-  upscale_factor?: '' | 'x2' | 'x3' | 'x4';
-  source_asset_ids?: number[];
-  source_media_items?: SourceMediaItemLink[];
-  workspace_id?: number;
-  use_brand_guidelines: boolean;
-  enhance_prompt?: boolean;
-  google_search?: boolean;
+  addWatermark: boolean;
+  upscaleFactor?: '' | 'x2' | 'x3' | 'x4';
+  sourceAssetIds?: number[];
+  sourceMediaItems?: SourceMediaItemLink[];
+  workspaceId?: number;
+  useBrandGuidelines: boolean;
+  enhancePrompt?: boolean;
+  googleSearch?: boolean;
   resolution?: '1K' | '2K' | '4K';
-  output_mime_type?: string;
+  outputMimeType?: string;
   temperature?: number;
-  max_output_tokens?: number;
-  top_p?: number;
+  maxOutputTokens?: number;
+  topP?: number;
 };
 
 export type SourceMediaItemLink = {
-  media_item_id: number;
-  media_index: number;
+  mediaItemId: number;
+  mediaIndex: number;
   role: string;
 };
 
 export interface ReferenceImage {
   previewUrl: string;
-  source_asset_id?: number;
-  source_media_item?: SourceMediaItemLink;
+  sourceAssetId?: number;
+  sourceMediaItem?: SourceMediaItemLink;
   isNew?: boolean;
 }
 
 export interface ReferenceImageDto {
-  asset_id: number;
-  reference_type: 'ASSET' | 'STYLE';
+  assetId: number;
+  referenceType: 'ASSET' | 'STYLE';
 }
 
 export type VeoRequest = {
   prompt: string;
-  generation_model: string;
-  aspect_ratio: string;
-  number_of_media?: number;
+  generationModel: string;
+  aspectRatio: string;
+  numberOfMedia?: number;
   style?: string | null;
   lighting?: string | null;
-  color_and_tone?: string | null;
+  colorAndTone?: string | null;
   composition?: string | null;
-  negative_prompt: string;
-  generate_audio: boolean;
-  duration_seconds: number;
-  start_image_asset_id?: number;
-  end_image_asset_id?: number;
-  source_video_asset_id?: number;
-  source_media_items?: SourceMediaItemLink[];
-  workspace_id?: number;
-  use_brand_guidelines: boolean;
-  enhance_prompt?: boolean;
-  reference_images?: ReferenceImageDto[];
+  negativePrompt: string;
+  generateAudio: boolean;
+  durationSeconds: number;
+  startImageAssetId?: number;
+  endImageAssetId?: number;
+  sourceVideoAssetId?: number;
+  sourceMediaItems?: SourceMediaItemLink[];
+  workspaceId?: number;
+  useBrandGuidelines: boolean;
+  enhancePrompt?: boolean;
+  referenceImages?: ReferenceImageDto[];
 };
 
 export type SearchResponse = {

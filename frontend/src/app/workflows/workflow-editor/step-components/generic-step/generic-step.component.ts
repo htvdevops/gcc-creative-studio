@@ -185,7 +185,7 @@ export class GenericStepComponent implements OnInit, OnChanges {
     // 1. Update Aspect Ratio options
     if (modelMeta.supportedAspectRatios) {
       const aspectRatioSetting = this.localConfig.settings.find(
-        s => s.name === 'aspect_ratio',
+        s => s.name === 'aspectRatio',
       );
       if (aspectRatioSetting) {
         // Generate options dynamically using ASPECT_RATIO_LABELS
@@ -198,7 +198,7 @@ export class GenericStepComponent implements OnInit, OnChanges {
 
         // Reset value if current value is invalid
         const currentAspectRatio = this.stepForm.get(
-          'settings.aspect_ratio',
+          'settings.aspectRatio',
         )?.value;
         if (
           currentAspectRatio &&
@@ -207,7 +207,7 @@ export class GenericStepComponent implements OnInit, OnChanges {
           // Set to first available option
           const firstOption = aspectRatioSetting.options?.[0]?.value;
           if (firstOption) {
-            this.stepForm.get('settings.aspect_ratio')?.setValue(firstOption);
+            this.stepForm.get('settings.aspectRatio')?.setValue(firstOption);
           }
         }
       }
@@ -247,7 +247,7 @@ export class GenericStepComponent implements OnInit, OnChanges {
       if (setting.name === 'seed') {
         setting.hidden = !modelMeta.supportsSeed;
       }
-      if (setting.name === 'negative_prompt') {
+      if (setting.name === 'negativePrompt') {
         setting.hidden = !modelMeta.supportsNegativePrompt;
       }
     });
@@ -267,7 +267,7 @@ export class GenericStepComponent implements OnInit, OnChanges {
       // Logic for specific inputs
       if (
         this.localConfig.type === 'generate-video' &&
-        (input.name === 'input_images' || input.name === 'reference_images')
+        (input.name === 'input_images' || input.name === 'referenceImages')
       ) {
         const showIngredients = currentMode === 'Ingredients to Video';
 
