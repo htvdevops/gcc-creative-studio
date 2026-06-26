@@ -33,6 +33,10 @@ export type ImagenRequest = {
   enhancePrompt?: boolean;
   googleSearch?: boolean;
   resolution?: '1K' | '2K' | '4K';
+  outputMimeType?: string;
+  temperature?: number;
+  maxOutputTokens?: number;
+  topP?: number;
 };
 
 export type SourceMediaItemLink = {
