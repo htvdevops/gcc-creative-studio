@@ -61,10 +61,10 @@ class GenerationModelEnum(str, Enum):
     GEMINI_2_5_FLASH = "gemini-2.5-flash"
     GEMINI_2_5_FLASH_IMAGE_PREVIEW = "gemini-2.5-flash-image-preview"
     GEMINI_2_5_FLASH_IMAGE = "gemini-2.5-flash-image"
-    GEMINI_3_PRO_PREVIEW = "gemini-3-pro-preview"
-    GEMINI_3_PRO_IMAGE_PREVIEW = "gemini-3-pro-image-preview"
+    GEMINI_3_PRO = "gemini-3-pro"
+    GEMINI_3_PRO_IMAGE = "gemini-3-pro-image"
     GEMINI_3_1_FLASH_IMAGE = "gemini-3.1-flash-image"
-    GEMINI_3_FLASH_PREVIEW = "gemini-3-flash-preview"
+    GEMINI_3_FLASH = "gemini-3-flash"
     VTO = "virtual-try-on-001"
 
     # Video-Specific Models
@@ -96,7 +96,7 @@ class GenerationModelEnum(str, Enum):
         return self in [
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE_PREVIEW,
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE,
-            GenerationModelEnum.GEMINI_3_PRO_IMAGE_PREVIEW,
+            GenerationModelEnum.GEMINI_3_PRO_IMAGE,
             GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE,
         ]
 
@@ -145,7 +145,7 @@ class GenerationModelEnum(str, Enum):
     def max_total_inputs(self) -> int:
         """Returns the maximum number of total inputs allowed for the model."""
         if self in [
-            GenerationModelEnum.GEMINI_3_PRO_IMAGE_PREVIEW,
+            GenerationModelEnum.GEMINI_3_PRO_IMAGE,
             GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE,
         ]:
             return 14

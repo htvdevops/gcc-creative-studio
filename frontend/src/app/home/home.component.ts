@@ -109,7 +109,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     useBrandGuidelines: false,
     enhancePrompt: false,
     googleSearch: false,
-    resolution: '4K',
+    resolution: '1K',
+    outputMimeType: 'image/png',
+    temperature: 1,
+    maxOutputTokens: 32768,
+    topP: 0.95,
   };
 
   modes = [
@@ -882,7 +886,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       negativePrompt: '',
       useBrandGuidelines: false,
       googleSearch: false,
-      resolution: '4K',
+      resolution: '1K',
+      outputMimeType: 'image/png',
+      temperature: 1,
+      maxOutputTokens: 32768,
+      topP: 0.95,
     };
     this.negativePhrases = [];
     this.referenceImages = [];

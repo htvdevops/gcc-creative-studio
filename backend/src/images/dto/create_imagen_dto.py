@@ -24,6 +24,7 @@ from src.common.base_dto import (
     CompositionEnum,
     GenerationModelEnum,
     LightingEnum,
+    MimeTypeEnum,
     StyleEnum,
 )
 from src.common.schema.media_item_model import SourceMediaItemLink
@@ -105,8 +106,24 @@ class CreateImagenDto(BaseDto):
         description="Whether to use Google Search for image generation.",
     )
     resolution: Literal["1K", "2K", "4K"] = Field(
-        default="4K",
+        default="1K",
         description="Resolution of the generated image.",
+    )
+    output_mime_type: MimeTypeEnum = Field(
+        default=MimeTypeEnum.IMAGE_PNG,
+        description="Output format of the generated image.",
+    )
+    temperature: float = Field(
+        default=1.0,
+        description="Controls the randomness of the generation.",
+    )
+    max_output_tokens: int = Field(
+        default=32768,
+        description="Maximum number of tokens to generate.",
+    )
+    top_p: float = Field(
+        default=0.95,
+        description="The cumulative probability of parameter highest probability tokens.",
     )
 
     @field_validator("prompt")
@@ -134,7 +151,7 @@ class CreateImagenDto(BaseDto):
             GenerationModelEnum.IMAGEN_4_001,
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE_PREVIEW,
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE,
-            GenerationModelEnum.GEMINI_3_PRO_IMAGE_PREVIEW,
+            GenerationModelEnum.GEMINI_3_PRO_IMAGE,
             GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE,
         ]
         if value not in valid_generation_models:
