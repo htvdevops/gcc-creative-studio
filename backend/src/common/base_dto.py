@@ -63,7 +63,7 @@ class GenerationModelEnum(str, Enum):
     GEMINI_2_5_FLASH_IMAGE = "gemini-2.5-flash-image"
     GEMINI_3_PRO_PREVIEW = "gemini-3-pro-preview"
     GEMINI_3_PRO_IMAGE_PREVIEW = "gemini-3-pro-image-preview"
-    GEMINI_3_1_FLASH_IMAGE_PREVIEW = "gemini-3.1-flash-image-preview"
+    GEMINI_3_1_FLASH_IMAGE = "gemini-3.1-flash-image"
     GEMINI_3_FLASH_PREVIEW = "gemini-3-flash-preview"
     VTO = "virtual-try-on-001"
 
@@ -97,13 +97,13 @@ class GenerationModelEnum(str, Enum):
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE_PREVIEW,
             GenerationModelEnum.GEMINI_2_5_FLASH_IMAGE,
             GenerationModelEnum.GEMINI_3_PRO_IMAGE_PREVIEW,
-            GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE_PREVIEW,
+            GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE,
         ]
 
     @property
     def valid_aspect_ratios(self) -> list["AspectRatioEnum"]:
         """Returns the valid aspect ratios for the model."""
-        if self in [GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE_PREVIEW]:
+        if self in [GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE]:
             return [
                 AspectRatioEnum.RATIO_1_1,
                 AspectRatioEnum.RATIO_3_4,
@@ -146,7 +146,7 @@ class GenerationModelEnum(str, Enum):
         """Returns the maximum number of total inputs allowed for the model."""
         if self in [
             GenerationModelEnum.GEMINI_3_PRO_IMAGE_PREVIEW,
-            GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE_PREVIEW,
+            GenerationModelEnum.GEMINI_3_1_FLASH_IMAGE,
         ]:
             return 14
         if self.is_gemini_image_model:
