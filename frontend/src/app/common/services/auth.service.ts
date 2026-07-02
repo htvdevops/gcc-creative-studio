@@ -149,84 +149,105 @@ export class AuthService {
   }
 
   /**
-   * A test sign-in method to get a Google ID token compatible with Identity Platform.
+   * Completes an Identity Platform sign-in from a GIS credential.
    *
+   * @param idToken The credential JWT emitted by the Google Sign-In button.
    * @returns An Observable that emits the Identity Platform-compatible ID token.
    */
-  signInForGoogleIdentityPlatform(): Observable<string> {
-    return this.promptForIdentityPlatformToken$().pipe(
-      switchMap(idToken => {
-        const payload = JSON.parse(atob(idToken.split('.')[1]));
-        const userEmail = payload.email?.toLowerCase();
+  signInForGoogleIdentityPlatform(idToken: string): Observable<string> {
+    const payload = JSON.parse(atob(idToken.split('.')[1]));
 
-        // If allowed, proceed to save session and return token
-        this.firebaseIdToken = idToken;
-        this.firebaseTokenExpiry = payload.exp * 1000;
+    // Save session and return token
+    this.firebaseIdToken = idToken;
+    this.firebaseTokenExpiry = payload.exp * 1000;
 
-        const session: FirebaseSession = {
-          token: idToken,
-          expiry: this.firebaseTokenExpiry,
-        };
-        localStorage.setItem(FIREBASE_SESSION_KEY, JSON.stringify(session));
+    const session: FirebaseSession = {
+      token: idToken,
+      expiry: this.firebaseTokenExpiry,
+    };
+    localStorage.setItem(FIREBASE_SESSION_KEY, JSON.stringify(session));
 
-        // Call the backend to get or create the user profile.
-        return this.syncUserWithBackend$(idToken).pipe(
-          map(() => idToken), // Pass the token along for the final result.
-        );
-      }),
+    // Call the backend to get or create the user profile.
+    return this.syncUserWithBackend$(idToken).pipe(
+      map(() => idToken), // Pass the token along for the final result.
     );
   }
 
-  private promptForIdentityPlatformToken$(): Observable<string> {
-    const GOOGLE_CLIENT_ID = environment.GOOGLE_CLIENT_ID;
+  /**
+   * Renders the official Google Sign-In button into the given containers and
+   * emits a credential JWT every time the user completes the account chooser.
+   *
+   * Unlike the One Tap prompt, the button flow is never suppressed by
+   * dismissal cooldowns or FedCM/third-party sign-in browser settings, so it
+   * does not need a timeout.
+   */
+  renderGoogleSignInButton(containers: HTMLElement[]): Observable<string> {
+    return this.waitForGoogleScript$().pipe(
+      switchMap(
+        () =>
+          new Observable<string>(observer => {
+            try {
+              google.accounts.id.initialize({
+                client_id: environment.GOOGLE_CLIENT_ID,
+                callback: (response: any) => {
+                  const idToken = response?.credential;
+                  if (idToken) {
+                    observer.next(idToken);
+                  } else {
+                    observer.error(
+                      new Error(
+                        'Google Sign-In response did not contain a credential.',
+                      ),
+                    );
+                  }
+                },
+              });
 
-    return new Observable<string>(observer => {
-      if (typeof google === 'undefined') {
-        return observer.error(
-          new Error(
-            'Google Identity Services script not loaded. Add it to index.html',
-          ),
-        );
-      }
-
-      const loginTimeout = setTimeout(() => {
-        observer.error(
-          new Error(
-            'Login timed out or third party sign-in may be disabled. Please try again and enable third party sign-in by clicking on the information button at the top left side of the browser.',
-          ),
-        );
-      }, 15000);
-
-      try {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: (response: any) => {
-            clearTimeout(loginTimeout);
-            const idToken = response.credential;
-            if (idToken) {
-              observer.next(idToken);
-              observer.complete();
-            } else {
-              observer.error(
-                new Error(
-                  'Google Sign-In response did not contain a credential.',
-                ),
+              for (const container of containers) {
+                google.accounts.id.renderButton(container, {
+                  type: 'standard',
+                  theme: 'filled_blue',
+                  size: 'large',
+                  text: 'signin_with',
+                  shape: 'rectangular',
+                  logo_alignment: 'left',
+                  width: Math.min(container.offsetWidth || 280, 400),
+                });
+              }
+            } catch (error) {
+              console.error(
+                'Error during Google Identity Platform sign-in initialization:',
+                error,
               );
+              observer.error(error);
             }
-          },
-        });
+          }),
+      ),
+    );
+  }
 
-        // Trigger the One Tap prompt.
-        // Per new docs, we don't use the notification object for flow control.
-        google.accounts.id.prompt();
-      } catch (error) {
-        clearTimeout(loginTimeout);
-        console.error(
-          'Error during Google Identity Platform sign-in initialization:',
-          error,
-        );
-        observer.error(error);
-      }
+  /**
+   * Waits for the GIS script (loaded async/defer from index.html) to be
+   * available before it is used.
+   */
+  private waitForGoogleScript$(timeoutMs = 10000): Observable<void> {
+    return new Observable<void>(observer => {
+      const startTime = Date.now();
+      const check = () => {
+        if (typeof google !== 'undefined' && google.accounts?.id) {
+          observer.next();
+          observer.complete();
+        } else if (Date.now() - startTime > timeoutMs) {
+          observer.error(
+            new Error(
+              'Google Identity Services script not loaded. Add it to index.html',
+            ),
+          );
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
     });
   }
 

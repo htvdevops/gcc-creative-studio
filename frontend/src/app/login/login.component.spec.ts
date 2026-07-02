@@ -42,6 +42,9 @@ class MockAuthService {
   signInForGoogleIdentityPlatform = jasmine.createSpy(
     'signInForGoogleIdentityPlatform',
   );
+  renderGoogleSignInButton = jasmine
+    .createSpy('renderGoogleSignInButton')
+    .and.returnValue(NEVER);
   // Add any other methods from AuthService that are called in LoginComponent
 }
 
@@ -110,7 +113,6 @@ describe('LoginComponent', () => {
     });
     it('should show loader and reset error flags', fakeAsync(() => {
       authService.signInWithGoogleFirebase.and.returnValue(NEVER); // Use NEVER to prevent completion or error
-      authService.signInForGoogleIdentityPlatform.and.returnValue(NEVER); // Use NEVER
       component.loader = false;
       component.invalidLogin = true;
       component.errorMessage = 'Old error';
@@ -170,7 +172,7 @@ describe('LoginComponent', () => {
       }));
     });
 
-    describe('in non-local environment', () => {
+    describe('in non-local environment (Google Sign-In button)', () => {
       beforeEach(() => {
         (environment as any).isLocal = false;
       });
@@ -181,10 +183,12 @@ describe('LoginComponent', () => {
         );
         spyOn(router, 'navigate');
 
-        component.loginWithGoogle();
+        (component as any).completeIdentityPlatformSignIn('test-credential');
         tick();
 
-        expect(authService.signInForGoogleIdentityPlatform).toHaveBeenCalled();
+        expect(
+          authService.signInForGoogleIdentityPlatform,
+        ).toHaveBeenCalledWith('test-credential');
         expect(component.loader).toBeFalse();
         expect(router.navigate).toHaveBeenCalledWith(['/']);
       }));
@@ -199,7 +203,7 @@ describe('LoginComponent', () => {
         );
         spyOn(component, 'handleLoginError' as any);
 
-        component.loginWithGoogle();
+        (component as any).completeIdentityPlatformSignIn('test-credential');
         tick();
 
         expect(component.loader).toBeFalse();
@@ -214,11 +218,39 @@ describe('LoginComponent', () => {
         );
         spyOn(component, 'handleLoginError' as any);
 
-        component.loginWithGoogle();
+        (component as any).completeIdentityPlatformSignIn('test-credential');
         tick();
 
         expect(component.loader).toBeFalse();
         expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
+      }));
+
+      it('should render the Google Sign-In button after view init in non-local env', () => {
+        component.isLocalEnv = false;
+        authService.renderGoogleSignInButton.calls.reset();
+
+        component.ngAfterViewInit();
+
+        expect(authService.renderGoogleSignInButton).toHaveBeenCalled();
+      });
+
+      it('should complete sign-in when the button emits a credential', fakeAsync(() => {
+        component.isLocalEnv = false;
+        authService.renderGoogleSignInButton.and.returnValue(
+          of('button-credential'),
+        );
+        authService.signInForGoogleIdentityPlatform.and.returnValue(
+          of('button-credential'),
+        );
+        spyOn(router, 'navigate');
+
+        component.ngAfterViewInit();
+        tick();
+
+        expect(
+          authService.signInForGoogleIdentityPlatform,
+        ).toHaveBeenCalledWith('button-credential');
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
       }));
     });
   });

@@ -39,6 +39,7 @@
       of <span class="linear-text">thought</span> 🚀
     </p>
     <button
+      *ngIf="isLocalEnv"
       mat-raised-button
       color="primary"
       (click)="loginWithGoogle()"
@@ -46,6 +47,11 @@
     >
       Login with Google
     </button>
+    <div
+      *ngIf="!isLocalEnv"
+      #googleButtonMobile
+      class="flex justify-center w-full max-w-xs"
+    ></div>
     <mat-spinner class="mt-5" [diameter]="50" *ngIf="this.loader"></mat-spinner>
   </div>
 
@@ -72,6 +78,7 @@
           Single Sign on with your Google Account
         </p>
         <button
+          *ngIf="isLocalEnv"
           mat-raised-button
           color="primary"
           (click)="loginWithGoogle()"
@@ -79,6 +86,11 @@
         >
           Login with Google
         </button>
+        <div
+          *ngIf="!isLocalEnv"
+          #googleButtonDesktop
+          class="flex justify-center w-full"
+        ></div>
         <mat-spinner
           class="mt-5 m-auto"
           [diameter]="50"

@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import {Component, NgZone, Inject, PLATFORM_ID} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  NgZone,
+  PLATFORM_ID,
+  ViewChild,
+} from '@angular/core';
 import {GoogleAuthProvider} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {AuthService} from './../common/services/auth.service';
@@ -35,13 +43,19 @@ interface LooseObject {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
   private readonly provider: GoogleAuthProvider = new GoogleAuthProvider();
+
+  @ViewChild('googleButtonMobile')
+  googleButtonMobile?: ElementRef<HTMLElement>;
+  @ViewChild('googleButtonDesktop')
+  googleButtonDesktop?: ElementRef<HTMLElement>;
 
   loader = false;
   invalidLogin = false;
   errorMessage = '';
   isBrowser: boolean;
+  isLocalEnv = environment?.isLocal ?? false;
 
   constructor(
     private authService: AuthService,
@@ -58,74 +72,85 @@ export class LoginComponent {
 
   ngOnInit(): void {}
 
+  ngAfterViewInit(): void {
+    // In deployed environments the official Google Sign-In button drives the
+    // login; render it once the view (and its containers) exist.
+    if (!this.isBrowser || this.isLocalEnv) return;
+
+    const containers = [this.googleButtonDesktop, this.googleButtonMobile]
+      .filter((ref): ref is ElementRef<HTMLElement> => !!ref)
+      .map(ref => ref.nativeElement);
+
+    this.authService.renderGoogleSignInButton(containers).subscribe({
+      next: credential =>
+        this.ngZone.run(() => this.completeIdentityPlatformSignIn(credential)),
+      error: error =>
+        this.ngZone.run(() => {
+          console.error('Google Sign-In button error:', error);
+          this.handleLoginError(
+            error || {
+              message:
+                'An unexpected error occurred during sign-in. Please try again.',
+            },
+          );
+        }),
+    });
+  }
+
+  // Local development only: deployed environments use the rendered Google
+  // Sign-In button instead (see ngAfterViewInit).
   loginWithGoogle() {
     this.loader = true;
     this.invalidLogin = false;
     this.errorMessage = '';
 
-    if (environment?.isLocal) {
-      // This will use the Google Identity Services library to get an FIREBASE-compatible token.
-      this.authService.signInWithGoogleFirebase().subscribe({
-        next: (firebaseToken: string) => {
-          // The signInForGoogleIdentityPlatform method already stored the token and minimal user details
-          // in localStorage. We just need to redirect to trigger the AuthGuard.
-          this.ngZone.run(() => {
-            this.loader = false;
-            void this.router.navigate([HOME_ROUTE]);
-          });
-        },
-        error: error => {
+    this.authService.signInWithGoogleFirebase().subscribe({
+      next: (firebaseToken: string) => {
+        // The token and minimal user details are already stored in
+        // localStorage. We just need to redirect to trigger the AuthGuard.
+        this.ngZone.run(() => {
           this.loader = false;
-          console.log(error);
-          // Handle specific errors from the auth service
-          if (
-            error.message?.includes('timed out') ||
-            error.message?.includes('Access Denied')
-          ) {
-            this.handleLoginError(error);
-          } else {
-            this.handleLoginError(
-              error || {
-                message:
-                  'An unexpected error occurred during sign-in. Please try again.',
-              },
-            );
-          }
-          console.error('FIREBASE Login Process Error:', error);
-        },
-      });
-    } else {
-      // This will use the Google Identity Services library to get an FIREBASE-compatible token.
-      this.authService.signInForGoogleIdentityPlatform().subscribe({
-        next: (firebaseToken: string) => {
-          // The signInForGoogleIdentityPlatform method already stored the token and minimal user details
-          // in localStorage. We just need to redirect to trigger the AuthGuard.
-          this.ngZone.run(() => {
-            this.loader = false;
-            void this.router.navigate([HOME_ROUTE]);
-          });
-        },
-        error: error => {
+          void this.router.navigate([HOME_ROUTE]);
+        });
+      },
+      error: error => {
+        this.loader = false;
+        console.error('FIREBASE Login Process Error:', error);
+        this.handleLoginError(
+          error || {
+            message:
+              'An unexpected error occurred during sign-in. Please try again.',
+          },
+        );
+      },
+    });
+  }
+
+  private completeIdentityPlatformSignIn(credential: string): void {
+    this.loader = true;
+    this.invalidLogin = false;
+    this.errorMessage = '';
+
+    this.authService.signInForGoogleIdentityPlatform(credential).subscribe({
+      next: () => {
+        // The token and minimal user details are already stored in
+        // localStorage. We just need to redirect to trigger the AuthGuard.
+        this.ngZone.run(() => {
           this.loader = false;
-          console.log(error);
-          // Handle specific errors from the auth service
-          if (
-            error.message?.includes('timed out') ||
-            error.message?.includes('Access Denied')
-          ) {
-            this.handleLoginError(error);
-          } else {
-            this.handleLoginError(
-              error || {
-                message:
-                  'An unexpected error occurred during sign-in. Please try again.',
-              },
-            );
-          }
-          console.error('FIREBASE Login Process Error:', error);
-        },
-      });
-    }
+          void this.router.navigate([HOME_ROUTE]);
+        });
+      },
+      error: error => {
+        this.loader = false;
+        console.error('Identity Platform Login Process Error:', error);
+        this.handleLoginError(
+          error || {
+            message:
+              'An unexpected error occurred during sign-in. Please try again.',
+          },
+        );
+      },
+    });
   }
 
   private handleLoginError(error: any, postErrorAction?: () => void) {
