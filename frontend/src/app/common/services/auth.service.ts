@@ -174,12 +174,12 @@ export class AuthService {
   }
 
   /**
-   * Renders the official Google Sign-In button into the given containers and
-   * emits a credential JWT every time the user completes the account chooser.
+   * Renders the official Google Sign-In button into the given containers.
    *
-   * Unlike the One Tap prompt, the button flow is never suppressed by
-   * dismissal cooldowns or FedCM/third-party sign-in browser settings, so it
-   * does not need a timeout.
+   * Uses redirect mode: completing the account chooser navigates away and
+   * Google POSTs the credential to the backend callback, which redirects
+   * back to /login#credential=... — so this observable only ever emits
+   * initialization/render errors, never a credential.
    */
   renderGoogleSignInButton(containers: HTMLElement[]): Observable<string> {
     return this.waitForGoogleScript$().pipe(
@@ -187,20 +187,19 @@ export class AuthService {
         () =>
           new Observable<string>(observer => {
             try {
+              // Redirect mode avoids popups entirely: Google form-POSTs the
+              // credential to the backend callback, which bounces it back to
+              // /login#credential=... (see LoginComponent). Popup mode broke
+              // for users with strict third-party cookie/FedCM settings
+              // (COOP window.opener errors).
               google.accounts.id.initialize({
                 client_id: environment.GOOGLE_CLIENT_ID,
-                callback: (response: any) => {
-                  const idToken = response?.credential;
-                  if (idToken) {
-                    observer.next(idToken);
-                  } else {
-                    observer.error(
-                      new Error(
-                        'Google Sign-In response did not contain a credential.',
-                      ),
-                    );
-                  }
-                },
+                ux_mode: 'redirect',
+                // Must be same-site with the page (the g_csrf_token cookie
+                // is scoped to it) and registered as an Authorized redirect
+                // URI on the OAuth client. The /api/** hosting rewrite
+                // forwards it to the backend.
+                login_uri: `${window.location.origin}/api/auth/callback`,
               });
 
               for (const container of containers) {

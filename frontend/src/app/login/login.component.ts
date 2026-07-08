@@ -70,7 +70,40 @@ export class LoginComponent implements AfterViewInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.handleRedirectFragment();
+  }
+
+  /**
+   * Completes a redirect-mode sign-in. The backend GIS callback redirects
+   * here with the verified credential (or an error) in the URL fragment,
+   * which never reaches servers or logs.
+   */
+  private handleRedirectFragment(): void {
+    if (!this.isBrowser) return;
+
+    const fragment = window.location.hash.slice(1);
+    if (!fragment) return;
+
+    const params = new URLSearchParams(fragment);
+    const credential = params.get('credential');
+    const error = params.get('error');
+    if (!credential && !error) return;
+
+    // Remove the token from the address bar and browser history.
+    history.replaceState(
+      null,
+      '',
+      window.location.pathname + window.location.search,
+    );
+
+    if (error) {
+      this.handleLoginError({message: error});
+      return;
+    }
+
+    this.completeIdentityPlatformSignIn(credential!);
+  }
 
   ngAfterViewInit(): void {
     // In deployed environments the official Google Sign-In button drives the
@@ -82,8 +115,6 @@ export class LoginComponent implements AfterViewInit {
       .map(ref => ref.nativeElement);
 
     this.authService.renderGoogleSignInButton(containers).subscribe({
-      next: credential =>
-        this.ngZone.run(() => this.completeIdentityPlatformSignIn(credential)),
       error: error =>
         this.ngZone.run(() => {
           console.error('Google Sign-In button error:', error);

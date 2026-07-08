@@ -234,24 +234,34 @@ describe('LoginComponent', () => {
         expect(authService.renderGoogleSignInButton).toHaveBeenCalled();
       });
 
-      it('should complete sign-in when the button emits a credential', fakeAsync(() => {
-        component.isLocalEnv = false;
-        authService.renderGoogleSignInButton.and.returnValue(
-          of('button-credential'),
-        );
+      it('should complete sign-in when redirected back with a credential fragment', fakeAsync(() => {
         authService.signInForGoogleIdentityPlatform.and.returnValue(
-          of('button-credential'),
+          of('redirect-credential'),
         );
         spyOn(router, 'navigate');
+        window.location.hash = '#credential=redirect-credential';
 
-        component.ngAfterViewInit();
+        component.ngOnInit();
         tick();
 
         expect(
           authService.signInForGoogleIdentityPlatform,
-        ).toHaveBeenCalledWith('button-credential');
+        ).toHaveBeenCalledWith('redirect-credential');
         expect(router.navigate).toHaveBeenCalledWith(['/']);
+        expect(window.location.hash).toBe('');
       }));
+
+      it('should show an error when redirected back with an error fragment', () => {
+        spyOn(component, 'handleLoginError' as any);
+        window.location.hash = '#error=Sign-in failed';
+
+        component.ngOnInit();
+
+        expect((component as any).handleLoginError).toHaveBeenCalledWith({
+          message: 'Sign-in failed',
+        });
+        expect(window.location.hash).toBe('');
+      });
     });
   });
 
