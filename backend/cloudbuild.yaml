@@ -50,6 +50,10 @@ steps:
       - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
       - '--region'
       - '${_REGION}'
+      # The Firebase Hosting /api/** rewrite invokes this service anonymously
+      # (e.g. the Google Sign-In redirect POST to /api/auth/callback), so it
+      # must allow unauthenticated invocation. Auth is enforced in the app.
+      - '--allow-unauthenticated'
       - '--quiet' # Suppress interactive prompts for CI/CD environments
 
 # BEST PRACTICE: Explicitly declare the image(s) built by this pipeline.

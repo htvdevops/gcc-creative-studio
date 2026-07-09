@@ -21,12 +21,17 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
 
+from src.auth.auth_guard import RoleChecker
+from src.users.user_model import UserRoleEnum
 from src.workbench.schemas import TimelineRequest
 from src.workbench.service import WorkbenchService
 
 router = APIRouter(
     prefix="/api/workbench",
     tags=["workbench"],
+    dependencies=[
+        Depends(RoleChecker([UserRoleEnum.USER, UserRoleEnum.ADMIN]))
+    ],
 )
 
 logger = logging.getLogger(__name__)

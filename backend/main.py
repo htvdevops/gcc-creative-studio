@@ -128,11 +128,18 @@ async def lifespan(app: FastAPI):
     # Your shutdown logic here, e.g., closing database connections
 
 
+# The service is publicly invokable (required by the Firebase Hosting
+# /api/** rewrite), so don't expose the interactive docs/schema in production.
+_docs_enabled = getenv("ENVIRONMENT") != "production"
+
 app = FastAPI(
     lifespan=lifespan,
     title="Creative Studio API",
     description="""GenMedia Creative Studio is an app that highlights the capabilities
     of Google Cloud Vertex AI generative AI creative APIs, including Imagen, Veo, Lyria, Chirp and more! 🚀""",
+    docs_url="/docs" if _docs_enabled else None,
+    redoc_url="/redoc" if _docs_enabled else None,
+    openapi_url="/openapi.json" if _docs_enabled else None,
 )
 
 

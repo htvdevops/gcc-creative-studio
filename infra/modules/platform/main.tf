@@ -195,3 +195,17 @@ resource "google_cloud_run_v2_service_iam_member" "fe_trigger_can_view_backend" 
   role     = "roles/run.viewer"
   member   = "serviceAccount:${module.frontend_service.trigger_sa_email}"
 }
+
+# Allow unauthenticated invocation of the Backend at the Cloud Run IAM layer.
+# Required because Firebase Hosting's /api/** rewrite forwards requests
+# anonymously (it cannot attach an identity), e.g. the Google Sign-In
+# redirect POST to /api/auth/callback. Authentication is enforced at the
+# application layer (see backend/src/auth/auth_guard.py).
+resource "google_cloud_run_v2_service_iam_member" "backend_public_invoker" {
+  provider = google-beta
+  project  = var.gcp_project_id
+  name     = module.backend_service.service_name
+  location = module.backend_service.location
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}

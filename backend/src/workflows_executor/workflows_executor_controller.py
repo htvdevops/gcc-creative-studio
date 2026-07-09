@@ -16,6 +16,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header
 
+from src.auth.auth_guard import RoleChecker
+from src.users.user_model import UserRoleEnum
 from src.workflows_executor.dto.workflows_executor_dto import (
     EditImageRequest,
     GenerateAudioRequest,
@@ -32,6 +34,12 @@ router = APIRouter(
     prefix="/api/workflows-executor",
     tags=["Workflows Executor"],
     responses={404: {"description": "Not found"}},
+    # Called by GCP Workflows, which forwards the executing user's own
+    # Authorization header (see workflow_service.py), so the standard
+    # role guard applies to the service-to-service flow as well.
+    dependencies=[
+        Depends(RoleChecker([UserRoleEnum.WORKFLOWS, UserRoleEnum.ADMIN]))
+    ],
 )
 
 

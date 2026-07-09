@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from src.auth.auth_guard import RoleChecker
 from src.common.base_dto import (
     AspectRatioEnum,
     CompositionEnum,
@@ -24,10 +25,14 @@ from src.generation_options.dto.generation_options_dto import (
     GenerationOptionsResponse,
 )
 from src.images.dto.create_imagen_dto import ColorAndToneEnum, LightingEnum
+from src.users.user_model import UserRoleEnum
 
 router = APIRouter(
     prefix="/api/options",
     tags=["Generation Options"],
+    dependencies=[
+        Depends(RoleChecker([UserRoleEnum.USER, UserRoleEnum.ADMIN]))
+    ],
 )
 
 

@@ -14,24 +14,25 @@
 """Tests for Generation Options Controller."""
 
 
-import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-
-from src.generation_options.generation_options_controller import router
-
-
-@pytest.fixture(name="client")
-def fixture_client():
-    app = FastAPI()
-    app.include_router(router)
-    return TestClient(app)
-
-
-def test_get_image_generation_options_success(client):
-    response = client.get("/api/options/image-generation")
+def test_get_image_generation_options_success(api_client):
+    response = api_client.get("/api/options/image-generation")
     assert response.status_code == 200
     data = response.json()
     # verify some fields exist
     assert "generation_models" in data or "generationModels" in data
     assert "styles" in data
+
+
+def test_get_image_generation_options_requires_auth(api_client):
+    """The endpoint must reject requests without a Bearer token."""
+    from main import app
+    from src.auth.auth_guard import get_current_user
+
+    # Drop the authenticated-user override installed by the api_client
+    # fixture so the request is treated as anonymous.
+    del app.dependency_overrides[get_current_user]
+    try:
+        response = api_client.get("/api/options/image-generation")
+        assert response.status_code == 401
+    finally:
+        app.dependency_overrides.clear()
