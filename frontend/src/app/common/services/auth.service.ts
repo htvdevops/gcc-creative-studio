@@ -336,10 +336,11 @@ export class AuthService {
       this.firebaseTokenExpiry > now
     );
 
-    if (!isTokenValid && this.router.url !== LOGIN_ROUTE) {
-      void this.router.navigate([LOGIN_ROUTE]);
-    }
-
+    // Deliberately no redirect here: this is a query and every caller
+    // (guards, interceptor) handles navigation itself. Navigating from
+    // here during bootstrap cancels the router's initial navigation and
+    // destroys the /login#credential=... fragment of the redirect-mode
+    // sign-in before LoginComponent can read it.
     return isTokenValid;
   }
 

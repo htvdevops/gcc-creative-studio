@@ -2,6 +2,7 @@
   "hosting": {
     "site": "SITE_ID_PLACEHOLDER",
     "public": "dist/creative-studio/browser",
+    "trailingSlash": false,
     "ignore": [
       "firebase.json",
       "**/.*",
