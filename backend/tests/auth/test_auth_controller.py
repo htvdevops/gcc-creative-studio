@@ -45,8 +45,22 @@ def test_callback_csrf_mismatch_redirects_with_error(api_client):
     assert "#error=" in response.headers["location"]
 
 
-def test_callback_missing_csrf_cookie_redirects_with_error(api_client):
-    response = _post_callback(api_client, csrf_cookie=None)
+def test_callback_missing_csrf_cookie_succeeds(api_client):
+    """Firebase Hosting strips all cookies except __session on /api/**
+    rewrites, so the double-submit cookie is legitimately absent in
+    deployed environments and must not block sign-in."""
+    with patch(
+        "src.auth.auth_controller.id_token.verify_oauth2_token",
+        return_value={"email": "user@example.com"},
+    ):
+        response = _post_callback(api_client, csrf_cookie=None)
+
+    assert response.status_code == 303
+    assert response.headers["location"].endswith("/login#credential=jwt")
+
+
+def test_callback_missing_csrf_body_redirects_with_error(api_client):
+    response = _post_callback(api_client, csrf_body=None)
 
     assert response.status_code == 303
     assert "#error=" in response.headers["location"]

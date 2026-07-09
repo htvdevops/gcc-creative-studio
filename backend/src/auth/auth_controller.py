@@ -50,11 +50,15 @@ async def google_signin_callback(
     Verifies the CSRF double-submit token and the credential itself, then
     hands the credential to the SPA via the URL fragment (never sent to
     servers or access logs).
+
+    Note: Firebase Hosting's /api/** rewrite strips every cookie except
+    __session before forwarding to Cloud Run, so in deployed environments
+    the g_csrf_token cookie never arrives. The double-submit comparison is
+    therefore only enforced when the cookie is present (e.g. local or
+    direct access); the credential verification below is the primary gate.
     """
-    if (
-        not g_csrf_token_body
-        or not g_csrf_token_cookie
-        or g_csrf_token_body != g_csrf_token_cookie
+    if not g_csrf_token_body or (
+        g_csrf_token_cookie and g_csrf_token_body != g_csrf_token_cookie
     ):
         logger.warning("GIS callback rejected: CSRF token missing or mismatched.")
         return _login_redirect("error=Sign-in%20request%20could%20not%20be%20verified.%20Please%20try%20again.")
