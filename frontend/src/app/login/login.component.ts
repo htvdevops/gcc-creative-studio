@@ -137,12 +137,7 @@ export class LoginComponent implements AfterViewInit {
 
     this.authService.signInWithGoogleFirebase().subscribe({
       next: (firebaseToken: string) => {
-        // The token and minimal user details are already stored in
-        // localStorage. We just need to redirect to trigger the AuthGuard.
-        this.ngZone.run(() => {
-          this.loader = false;
-          void this.router.navigate([HOME_ROUTE]);
-        });
+        this.reloadToHome();
       },
       error: error => {
         this.loader = false;
@@ -177,12 +172,7 @@ export class LoginComponent implements AfterViewInit {
   private signInForGoogleIdentityPlatform(credential: string): void {
     this.authService.signInForGoogleIdentityPlatform(credential).subscribe({
       next: () => {
-        // The token and minimal user details are already stored in
-        // localStorage. We just need to redirect to trigger the AuthGuard.
-        this.ngZone.run(() => {
-          this.loader = false;
-          void this.router.navigate([HOME_ROUTE]);
-        });
+        this.reloadToHome();
       },
       error: error => {
         this.loader = false;
@@ -195,6 +185,17 @@ export class LoginComponent implements AfterViewInit {
         );
       },
     });
+  }
+
+  /**
+   * Completes sign-in with a full document navigation instead of SPA
+   * routing: components living outside the router outlet (header,
+   * workspace switcher) were created while logged out and cache their
+   * failed loads, so a fresh bootstrap is needed to pick up the session.
+   * Overridable in tests, where a real navigation would kill the runner.
+   */
+  protected reloadToHome(): void {
+    window.location.assign(HOME_ROUTE);
   }
 
   private handleLoginError(error: any, postErrorAction?: () => void) {

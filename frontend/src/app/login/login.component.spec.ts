@@ -129,16 +129,15 @@ describe('LoginComponent', () => {
         (environment as any).isLocal = true;
       });
 
-      it('should call signInWithGoogleFirebase and navigate on success', fakeAsync(() => {
+      it('should call signInWithGoogleFirebase and reload to home on success', fakeAsync(() => {
         authService.signInWithGoogleFirebase.and.returnValue(of('test-token'));
-        spyOn(router, 'navigate');
+        const reloadSpy = spyOn<any>(component, 'reloadToHome');
 
         component.loginWithGoogle();
         tick();
 
         expect(authService.signInWithGoogleFirebase).toHaveBeenCalled();
-        expect(component.loader).toBeFalse();
-        expect(router.navigate).toHaveBeenCalledWith(['/']);
+        expect(reloadSpy).toHaveBeenCalled();
       }));
 
       it('should handle error from signInWithGoogleFirebase', fakeAsync(() => {
@@ -177,11 +176,11 @@ describe('LoginComponent', () => {
         (environment as any).isLocal = false;
       });
 
-      it('should call signInForGoogleIdentityPlatform and navigate on success', fakeAsync(() => {
+      it('should call signInForGoogleIdentityPlatform and reload to home on success', fakeAsync(() => {
         authService.signInForGoogleIdentityPlatform.and.returnValue(
           of('test-token'),
         );
-        spyOn(router, 'navigate');
+        const reloadSpy = spyOn<any>(component, 'reloadToHome');
 
         (component as any).completeIdentityPlatformSignIn('test-credential');
         tick();
@@ -189,8 +188,7 @@ describe('LoginComponent', () => {
         expect(
           authService.signInForGoogleIdentityPlatform,
         ).toHaveBeenCalledWith('test-credential');
-        expect(component.loader).toBeFalse();
-        expect(router.navigate).toHaveBeenCalledWith(['/']);
+        expect(reloadSpy).toHaveBeenCalled();
       }));
 
       it('should handle error from signInForGoogleIdentityPlatform', fakeAsync(() => {
@@ -238,7 +236,7 @@ describe('LoginComponent', () => {
         authService.signInForGoogleIdentityPlatform.and.returnValue(
           of('redirect-credential'),
         );
-        spyOn(router, 'navigate');
+        const reloadSpy = spyOn<any>(component, 'reloadToHome');
         window.location.hash = '#credential=redirect-credential';
 
         component.ngOnInit();
@@ -247,7 +245,7 @@ describe('LoginComponent', () => {
         expect(
           authService.signInForGoogleIdentityPlatform,
         ).toHaveBeenCalledWith('redirect-credential');
-        expect(router.navigate).toHaveBeenCalledWith(['/']);
+        expect(reloadSpy).toHaveBeenCalled();
         expect(window.location.hash).toBe('');
       }));
 
