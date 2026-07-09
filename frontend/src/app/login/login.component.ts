@@ -162,6 +162,19 @@ export class LoginComponent implements AfterViewInit {
     this.invalidLogin = false;
     this.errorMessage = '';
 
+    try {
+      this.signInForGoogleIdentityPlatform(credential);
+    } catch (error) {
+      // A synchronous failure (e.g. malformed credential) would otherwise
+      // escape the observable's error callback and die silently.
+      console.error('Identity Platform Login Process Error:', error);
+      this.handleLoginError({
+        message: 'Sign-in failed. Please try again.',
+      });
+    }
+  }
+
+  private signInForGoogleIdentityPlatform(credential: string): void {
     this.authService.signInForGoogleIdentityPlatform(credential).subscribe({
       next: () => {
         // The token and minimal user details are already stored in

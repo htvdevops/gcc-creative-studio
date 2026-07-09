@@ -42,6 +42,16 @@ interface FirebaseSession {
   expiry: number; // Expiration timestamp in milliseconds
 }
 
+/**
+ * Decodes a JWT payload. JWTs are base64url-encoded ('-' and '_' instead of
+ * '+' and '/'), which atob() rejects, so translate the alphabet first.
+ */
+function decodeJwtPayload(token: string): any {
+  const base64url = token.split('.')[1];
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  return JSON.parse(atob(base64));
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -130,7 +140,7 @@ export class AuthService {
       return from(currentUser.getIdToken(true)).pipe(
         tap((token: string) => {
           // Update the in-memory cache and localStorage with the refreshed token info.
-          const payload = JSON.parse(atob(token.split('.')[1]));
+          const payload = decodeJwtPayload(token);
           const expiry = payload.exp * 1000;
 
           this.firebaseIdToken = token;
@@ -155,7 +165,7 @@ export class AuthService {
    * @returns An Observable that emits the Identity Platform-compatible ID token.
    */
   signInForGoogleIdentityPlatform(idToken: string): Observable<string> {
-    const payload = JSON.parse(atob(idToken.split('.')[1]));
+    const payload = decodeJwtPayload(idToken);
 
     // Save session and return token
     this.firebaseIdToken = idToken;
